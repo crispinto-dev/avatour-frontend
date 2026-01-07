@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="AVATOUR - Mappa interattiva dei punti di interesse">
+    <meta name="theme-color" content="#1e40af">
+    <title>AVATOUR - Mappa POI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="map-page">
+    <!-- Header -->
+    <header class="map-header">
+        <div class="header-left">
+            <button id="back-btn" class="btn-icon" title="Indietro">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="header-center">
+            <h1 class="map-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="map-icon">
+                    <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/>
+                    <path d="M8 2v16M16 6v16"/>
+                </svg>
+                <span>POI nelle vicinanze</span>
+            </h1>
+        </div>
+
+        <div class="header-right">
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <button id="lang-toggle" class="lang-button">
+                    <span class="flag-icon" id="current-flag">🇮🇹</span>
+                    <span class="lang-code" id="current-lang">IT</span>
+                </button>
+                <div id="lang-dropdown" class="lang-dropdown hidden">
+                    <button class="lang-option" data-lang="it">
+                        <span class="flag-icon">🇮🇹</span>
+                        <span>Italiano</span>
+                    </button>
+                    <button class="lang-option" data-lang="en">
+                        <span class="flag-icon">🇬🇧</span>
+                        <span>English</span>
+                    </button>
+                    <button class="lang-option" data-lang="de">
+                        <span class="flag-icon">🇩🇪</span>
+                        <span>Deutsch</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Map Container -->
+    <div id="map" class="map-container"></div>
+
+    <!-- POI List Panel -->
+    <div class="poi-list-panel">
+        <div class="panel-header">
+            <h2>Punti di interesse</h2>
+            <button id="toggle-list" class="toggle-btn">
+                <svg id="chevron-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 15l-6-6-6 6"/>
+                </svg>
+                <svg id="chevron-down" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
+        </div>
+        <div id="poi-list" class="poi-list">
+            <!-- POI cards will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- POI Detail Modal -->
+    <div id="poi-modal" class="modal hidden">
+        <div class="modal-content modal-poi">
+            <button id="close-modal" class="close-btn">&times;</button>
+
+            <div class="poi-modal-header">
+                <img id="modal-thumbnail" src="" alt="" class="poi-thumbnail">
+                <div class="poi-info">
+                    <h2 id="modal-title"></h2>
+                    <p id="modal-description"></p>
+                </div>
+            </div>
+
+            <div class="poi-modal-body">
+                <div class="poi-detail-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span id="modal-coordinates"></span>
+                </div>
+
+                <div class="poi-detail-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        <path d="M2 12h20"/>
+                    </svg>
+                    <span id="modal-languages">Italiano, English, Deutsch</span>
+                </div>
+            </div>
+
+            <div class="poi-modal-footer">
+                <button id="start-tour" class="btn-primary btn-large">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <span>Inizia il tour</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="map-loading" class="map-loading">
+        <div class="spinner"></div>
+        <p>Caricamento mappa...</p>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <script src="assets/js/map.js"></script>
+</body>
+</html>

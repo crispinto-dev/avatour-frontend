@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggiungi POI - AVATOUR Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>AVATOUR</h2>
+                <p>Admin</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="poi-list.html" class="nav-item active">
+                    <span>📍</span> POI
+                </a>
+                <a href="clients.html" class="nav-item">
+                    <span>🏢</span> Clienti
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-logout">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div>
+                    <a href="poi-list.html" class="back-link">← Torna alla lista</a>
+                    <h1>Aggiungi Nuovo POI</h1>
+                </div>
+            </header>
+
+            <form id="poiForm" class="poi-form">
+                <!-- Informazioni Base -->
+                <div class="form-section">
+                    <h3>📋 Informazioni Base</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientSlug">Cliente *</label>
+                            <select id="clientSlug" required>
+                                <option value="">Seleziona cliente</option>
+                                <option value="PAL">PAL - Palinuro</option>
+                                <option value="ROM">ROM - Roma</option>
+                                <option value="BST">BST - Bassano</option>
+                                <option value="TSC">TSC - Tuscia</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="poiNumber">Numero POI *</label>
+                            <input type="number" id="poiNumber" min="1" max="999" required placeholder="es: 1">
+                            <small>Codice generato: <strong id="generatedCode">-</strong></small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poiName">Nome POI *</label>
+                        <input type="text" id="poiName" required placeholder="es: Capo Palinuro">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poiDescription">Descrizione</label>
+                        <textarea id="poiDescription" rows="3" placeholder="Breve descrizione del punto di interesse..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Posizione -->
+                <div class="form-section">
+                    <h3>📍 Posizione</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lat">Latitudine *</label>
+                            <input type="number" id="lat" step="0.000001" required placeholder="40.0292">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lng">Longitudine *</label>
+                            <input type="number" id="lng" step="0.000001" required placeholder="15.2794">
+                        </div>
+                    </div>
+
+                    <div id="mapPicker" style="height: 300px; margin-top: 15px; border-radius: 8px; overflow: hidden;"></div>
+                    <small>Clicca sulla mappa per selezionare la posizione</small>
+                </div>
+
+                <!-- Lingue -->
+                <div class="form-section">
+                    <h3>🌍 Lingue Disponibili</h3>
+
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="languages" value="it" checked> 🇮🇹 Italiano</label>
+                        <label><input type="checkbox" name="languages" value="en"> 🇬🇧 Inglese</label>
+                        <label><input type="checkbox" name="languages" value="de"> 🇩🇪 Tedesco</label>
+                        <label><input type="checkbox" name="languages" value="fr"> 🇫🇷 Francese</label>
+                        <label><input type="checkbox" name="languages" value="es"> 🇪🇸 Spagnolo</label>
+                    </div>
+                </div>
+
+                <!-- Video -->
+                <div class="form-section">
+                    <h3>🎥 Video</h3>
+
+                    <div id="videoInputs">
+                        <!-- Popolato dinamicamente -->
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="poi-list.html" class="btn-secondary">Annulla</a>
+                    <button type="submit" class="btn-primary">💾 Salva POI</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/poi-manager.js"></script>
+    <script>
+        checkAuth();
+        initPOIForm();
+    </script>
+</body>
+</html>

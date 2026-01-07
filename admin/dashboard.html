@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AVATOUR Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>AVATOUR</h2>
+                <p>Admin</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="poi-list.html" class="nav-item">
+                    <span>📍</span> POI
+                </a>
+                <a href="clients.html" class="nav-item">
+                    <span>🏢</span> Clienti
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-logout">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Dashboard</h1>
+                <div class="user-info">
+                    <span id="userDisplay">👤 Admin</span>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Stats Cards -->
+                <div class="stat-card">
+                    <div class="stat-icon">📍</div>
+                    <div class="stat-info">
+                        <h3 id="totalPOIs">-</h3>
+                        <p>Totale POI</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🏢</div>
+                    <div class="stat-info">
+                        <h3 id="totalClients">-</h3>
+                        <p>Clienti</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🎥</div>
+                    <div class="stat-info">
+                        <h3 id="totalVideos">-</h3>
+                        <p>Video</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🌍</div>
+                    <div class="stat-info">
+                        <h3 id="totalLanguages">-</h3>
+                        <p>Lingue</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent POIs -->
+            <div class="content-section">
+                <h2>POI Recenti</h2>
+                <div id="recentPOIs" class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Codice</th>
+                                <th>Nome</th>
+                                <th>Cliente</th>
+                                <th>Lingue</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentPOIsBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px;">
+                                    <div class="loading-spinner"></div>
+                                    Caricamento...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Carica prima admin.js per definire API_BASE, poi auth.js -->
+    <script src="assets/js/admin.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        checkAuth();
+        document.getElementById('userDisplay').textContent = '👤 ' + getUsername();
+        loadDashboardStats();
+    </script>
+</body>
+</html>

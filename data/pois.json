@@ -1,0 +1,148 @@
+{
+  "pois": [
+    {
+      "id": "poi-001",
+      "title": {
+        "it": "Orte - Filoteo Alberini",
+        "en": "Orte - Filoteo Alberini",
+        "de": "Orte - Filoteo Alberini"
+      },
+      "description": {
+        "it": "Scopri la storia di Filoteo Alberini, inventore e pioniere del cinema italiano",
+        "en": "Discover the history of Filoteo Alberini, inventor and pioneer of Italian cinema",
+        "de": "Entdecken Sie die Geschichte von Filoteo Alberini, Erfinder und Pionier des italienischen Kinos"
+      },
+      "coordinates": {
+        "lat": 42.4603,
+        "lng": 12.3908
+      },
+      "languages": ["it", "en", "de"],
+      "videoUrl": {
+        "it": "assets/videos/demo.mp4",
+        "en": "assets/videos/demo.mp4",
+        "de": "assets/videos/demo.mp4"
+      },
+      "thumbnailUrl": "assets/images/alberini.png"
+    },
+    {
+      "id": "poi-002",
+      "title": {
+        "it": "Grotta Azzurra",
+        "en": "Blue Grotto",
+        "de": "Blaue Grotte"
+      },
+      "description": {
+        "it": "Una spettacolare grotta marina dalle acque cristalline",
+        "en": "A spectacular sea cave with crystal clear waters",
+        "de": "Eine spektakuläre Meereshöhle mit kristallklarem Wasser"
+      },
+      "coordinates": {
+        "lat": 40.0258,
+        "lng": 15.2698
+      },
+      "languages": ["it", "en", "de"],
+      "videoUrl": {
+        "it": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        "en": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        "de": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+      },
+      "thumbnailUrl": "https://via.placeholder.com/400x600/1e40af/ffffff?text=Grotta+Azzurra"
+    },
+    {
+      "id": "poi-003",
+      "title": {
+        "it": "Porto di Palinuro",
+        "en": "Port of Palinuro",
+        "de": "Hafen von Palinuro"
+      },
+      "description": {
+        "it": "Il caratteristico porticciolo turistico",
+        "en": "The characteristic tourist harbor",
+        "de": "Der charakteristische Touristenhafen"
+      },
+      "coordinates": {
+        "lat": 40.0312,
+        "lng": 15.2821
+      },
+      "languages": ["it", "en", "de"],
+      "videoUrl": {
+        "it": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "en": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "de": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+      },
+      "thumbnailUrl": "https://via.placeholder.com/400x600/1e40af/ffffff?text=Porto+Palinuro"
+    },
+    {
+      "id": "poi-004",
+      "title": {
+        "it": "Spiaggia della Marinella",
+        "en": "Marinella Beach",
+        "de": "Marinella-Strand"
+      },
+      "description": {
+        "it": "Una delle spiagge più belle del Cilento",
+        "en": "One of the most beautiful beaches in Cilento",
+        "de": "Einer der schönsten Strände in Cilento"
+      },
+      "coordinates": {
+        "lat": 40.0295,
+        "lng": 15.2795
+      },
+      "languages": ["it", "en", "de"],
+      "videoUrl": {
+        "it": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        "en": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        "de": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+      },
+      "thumbnailUrl": "https://via.placeholder.com/400x600/1e40af/ffffff?text=Marinella"
+    },
+    {
+      "id": "poi-005",
+      "title": {
+        "it": "Arco Naturale",
+        "en": "Natural Arch",
+        "de": "Natürlicher Bogen"
+      },
+      "description": {
+        "it": "Formazione rocciosa naturale sul mare",
+        "en": "Natural rock formation on the sea",
+        "de": "Natürliche Felsformation am Meer"
+      },
+      "coordinates": {
+        "lat": 40.0245,
+        "lng": 15.2715
+      },
+      "languages": ["it", "en", "de"],
+      "videoUrl": {
+        "it": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        "en": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        "de": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+      },
+      "thumbnailUrl": "https://via.placeholder.com/400x600/1e40af/ffffff?text=Arco+Naturale"
+    },
+    {
+      "id": "poi-006",
+      "title": {
+        "it": "Faro di Palinuro",
+        "en": "Palinuro Lighthouse",
+        "de": "Leuchtturm von Palinuro"
+      },
+      "description": {
+        "it": "Il faro storico che domina il promontorio",
+        "en": "The historic lighthouse overlooking the promontory",
+        "de": "Der historische Leuchtturm mit Blick auf das Vorgebirge"
+      },
+      "coordinates": {
+        "lat": 40.0215,
+        "lng": 15.2689
+      },
+      "languages": ["it", "en", "de"],
+      "videoUrl": {
+        "it": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+        "en": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+        "de": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+      },
+      "thumbnailUrl": "https://via.placeholder.com/400x600/1e40af/ffffff?text=Faro"
+    }
+  ]
+}

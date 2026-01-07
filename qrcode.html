@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVATOUR - QR Code Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        h1 {
+            color: #1e40af;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .qr-container {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        #qrcode {
+            display: inline-block;
+        }
+
+        .url {
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            word-break: break-all;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #f59e0b;
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e40af;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+            transform: translateY(-2px);
+        }
+
+        button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .instructions {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            color: #1e40af;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .instructions ol {
+            color: #64748b;
+            line-height: 1.8;
+            padding-left: 1.5rem;
+        }
+
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .buttons, .instructions {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg viewBox="0 0 200 200" fill="none">
+                <circle cx="100" cy="100" r="60" stroke="#f59e0b" stroke-width="8"/>
+                <path d="M 100 50 L 130 90 L 115 90 L 115 130 L 85 130 L 85 90 L 70 90 Z" fill="#ffffff"/>
+            </svg>
+        </div>
+
+        <h1>AVATOUR</h1>
+        <p class="subtitle">Scansiona il QR Code per iniziare</p>
+
+        <div class="qr-container">
+            <div id="qrcode"></div>
+        </div>
+
+        <div class="url">http://avatour.it/demo</div>
+
+        <div class="buttons">
+            <button class="btn-primary" onclick="downloadQRCode()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Scarica PNG
+            </button>
+
+            <button class="btn-secondary" onclick="downloadSVG()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Scarica SVG
+            </button>
+
+            <button class="btn-secondary" onclick="window.print()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 6 2 18 2 18 9"/>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                    <rect x="6" y="14" width="12" height="8"/>
+                </svg>
+                Stampa
+            </button>
+        </div>
+
+        <div class="instructions">
+            <h3>Come utilizzare:</h3>
+            <ol>
+                <li>Scarica il QR code in formato PNG o SVG</li>
+                <li>Stampalo o visualizzalo digitalmente</li>
+                <li>I visitatori possono scansionarlo con la fotocamera dello smartphone</li>
+                <li>Si aprirà automaticamente la demo AVATOUR</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- QRCode.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <script>
+        // Generate QR Code
+        const qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: "http://avatour.it/demo",
+            width: 256,
+            height: 256,
+            colorDark: "#1e40af",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Download QR Code as PNG
+        function downloadQRCode() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                // Create a new canvas with padding
+                const padding = 40;
+                const newCanvas = document.createElement('canvas');
+                const ctx = newCanvas.getContext('2d');
+
+                newCanvas.width = canvas.width + padding * 2;
+                newCanvas.height = canvas.height + padding * 2;
+
+                // Fill with white background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+
+                // Draw QR code
+                ctx.drawImage(canvas, padding, padding);
+
+                // Download
+                const link = document.createElement('a');
+                link.download = 'avatour-qrcode.png';
+                link.href = newCanvas.toDataURL();
+                link.click();
+            }
+        }
+
+        // Download QR Code as SVG
+        function downloadSVG() {
+            const url = "http://avatour.it/demo";
+            const size = 256;
+            const color = "%231e40af";
+
+            // Use an online SVG QR code API or create manually
+            const svgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}&color=${color}&bgcolor=ffffff&qzone=2&format=svg`;
+
+            fetch(svgUrl)
+                .then(response => response.text())
+                .then(svgContent => {
+                    const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+                    const link = document.createElement('a');
+                    link.download = 'avatour-qrcode.svg';
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                })
+                .catch(error => {
+                    console.error('Error downloading SVG:', error);
+                    alert('Errore nel download del file SVG');
+                });
+        }
+    </script>
+</body>
+</html>
