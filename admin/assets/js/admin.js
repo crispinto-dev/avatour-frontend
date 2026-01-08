@@ -2,7 +2,8 @@
  * AVATOUR Admin - Dashboard & General Functions
  */
 
-const API_BASE = 'http://localhost:3000/api';
+//const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'http://72.60.80.53:3000/api';
 // AUTH_KEY è definito in auth.js
 
 /**
