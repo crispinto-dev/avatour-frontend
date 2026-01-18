@@ -62,12 +62,18 @@ class AvatourApp {
         this.checkOrientation();
         window.addEventListener('resize', () => this.checkOrientation());
 
+        // Initialize orientation listener for auto-fullscreen
+        this.initOrientationListener();
+
         // Show tutorial for first-time visitors
         if (this.firstVisit) {
             setTimeout(() => {
                 this.showTutorial();
             }, 3000);
         }
+
+        // Show rotation hint on mobile in portrait
+        this.showRotationHint();
     }
 
     hideSplash() {
@@ -603,6 +609,158 @@ class AvatourApp {
             this.elements.orientationWarning.classList.remove('hidden');
         } else {
             this.elements.orientationWarning.classList.add('hidden');
+        }
+    }
+
+    // ========================================
+    // Auto-Fullscreen on Orientation Change
+    // ========================================
+
+    /**
+     * Check if device is mobile
+     */
+    isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               (window.innerWidth <= 768 && 'ontouchstart' in window);
+    }
+
+    /**
+     * Initialize orientation change listener
+     */
+    initOrientationListener() {
+        if (!this.isMobileDevice()) return;
+
+        // Use matchMedia for better cross-browser support
+        const landscapeQuery = window.matchMedia("(orientation: landscape)");
+
+        // Handle orientation change
+        const handleChange = (e) => {
+            // Delay to allow orientation to stabilize
+            setTimeout(() => {
+                this.handleOrientationChange(e.matches);
+            }, 100);
+        };
+
+        // Modern browsers
+        if (landscapeQuery.addEventListener) {
+            landscapeQuery.addEventListener('change', handleChange);
+        } else if (landscapeQuery.addListener) {
+            // Safari < 14
+            landscapeQuery.addListener(handleChange);
+        }
+
+        // Also listen to orientationchange event for broader support
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                const isLandscape = window.innerWidth > window.innerHeight;
+                this.handleOrientationChange(isLandscape);
+            }, 100);
+        });
+    }
+
+    /**
+     * Handle orientation change - enter/exit fullscreen
+     */
+    handleOrientationChange(isLandscape) {
+        if (!this.isMobileDevice()) return;
+
+        const container = document.querySelector('.video-container');
+        if (!container) return;
+
+        if (isLandscape) {
+            // Enter fullscreen when rotating to landscape
+            this.enterFullscreen(container);
+            // Hide rotation hint
+            this.hideRotationHint();
+        } else {
+            // Exit fullscreen when rotating to portrait
+            this.exitFullscreenAuto();
+        }
+    }
+
+    /**
+     * Enter fullscreen (cross-browser)
+     */
+    async enterFullscreen(element) {
+        if (!element) return;
+
+        try {
+            if (element.requestFullscreen) {
+                await element.requestFullscreen();
+            } else if (element.webkitRequestFullscreen) {
+                // Safari
+                await element.webkitRequestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                // Firefox
+                await element.mozRequestFullScreen();
+            } else if (element.msRequestFullscreen) {
+                // IE/Edge
+                await element.msRequestFullscreen();
+            } else if (element.webkitEnterFullscreen) {
+                // iOS Safari video element
+                await element.webkitEnterFullscreen();
+            }
+        } catch (err) {
+            console.log('Fullscreen request failed:', err.message);
+        }
+    }
+
+    /**
+     * Exit fullscreen (cross-browser)
+     */
+    async exitFullscreenAuto() {
+        const fullscreenElement = document.fullscreenElement ||
+                                   document.webkitFullscreenElement ||
+                                   document.mozFullScreenElement ||
+                                   document.msFullscreenElement;
+
+        if (!fullscreenElement) return;
+
+        try {
+            if (document.exitFullscreen) {
+                await document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                // Safari
+                await document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                // Firefox
+                await document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                // IE/Edge
+                await document.msExitFullscreen();
+            }
+        } catch (err) {
+            console.log('Exit fullscreen failed:', err.message);
+        }
+    }
+
+    /**
+     * Show rotation hint for mobile users
+     */
+    showRotationHint() {
+        if (!this.isMobileDevice()) return;
+
+        // Only show in portrait mode
+        const isPortrait = window.innerHeight > window.innerWidth;
+        if (!isPortrait) return;
+
+        const hint = document.getElementById('rotation-hint');
+        if (hint) {
+            hint.classList.remove('hidden');
+            // Auto-hide after 4 seconds
+            setTimeout(() => {
+                this.hideRotationHint();
+            }, 4000);
+        }
+    }
+
+    /**
+     * Hide rotation hint
+     */
+    hideRotationHint() {
+        const hint = document.getElementById('rotation-hint');
+        if (hint) {
+            hint.classList.add('hidden');
         }
     }
 }

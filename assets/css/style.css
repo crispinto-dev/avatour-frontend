@@ -1282,3 +1282,167 @@ input:focus-visible {
     outline: 2px solid var(--primary-orange);
     outline-offset: 2px;
 }
+
+/* ========================================
+   Fullscreen Styles
+   ======================================== */
+
+/* Standard Fullscreen */
+.video-container:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+}
+
+.video-container:fullscreen .avatar-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.video-container:fullscreen .video-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+.video-container:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+}
+
+.video-container:-webkit-full-screen .avatar-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.video-container:-webkit-full-screen .video-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+/* Mozilla (Firefox) */
+.video-container:-moz-full-screen {
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+}
+
+.video-container:-moz-full-screen .avatar-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.video-container:-moz-full-screen .video-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+/* Microsoft (IE/Edge Legacy) */
+.video-container:-ms-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+}
+
+.video-container:-ms-fullscreen .avatar-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.video-container:-ms-fullscreen .video-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+/* ========================================
+   Rotation Hint
+   ======================================== */
+
+.rotation-hint {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: var(--text-light);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    z-index: var(--z-modal);
+    animation: slideInUp 0.3s ease, fadeOutHint 0.5s ease 3.5s forwards;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.rotation-hint.hidden {
+    display: none !important;
+}
+
+.rotation-hint-icon {
+    font-size: 1.5rem;
+    animation: rotatePhone 2s ease-in-out infinite;
+}
+
+.rotation-hint-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateX(-50%) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOutHint {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes rotatePhone {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-15deg);
+    }
+    75% {
+        transform: rotate(90deg);
+    }
+}
+
+/* Hide rotation hint in landscape */
+@media (orientation: landscape) {
+    .rotation-hint {
+        display: none !important;
+    }
+}
