@@ -4,7 +4,9 @@
 
 //const API_BASE = 'http://localhost:3000/api';
 const API_BASE = 'http://72.60.80.53:3000/api';
-// AUTH_KEY è definito in auth.js
+
+// Definisco AUTH_KEY qui perché admin.js viene caricato prima di auth.js
+const AUTH_KEY = 'avatour_admin_token';
 
 /**
  * Helper per chiamate API pubbliche (senza auth)
