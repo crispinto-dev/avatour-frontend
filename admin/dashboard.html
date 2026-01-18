@@ -105,9 +105,9 @@
         </main>
     </div>
 
-    <!-- Carica prima admin.js per definire API_BASE, poi auth.js -->
-    <script src="assets/js/admin.js"></script>
+    <!-- Carica prima auth.js per AUTH_KEY e checkAuth, poi admin.js per API -->
     <script src="assets/js/auth.js"></script>
+    <script src="assets/js/admin.js"></script>
     <script>
         checkAuth();
         document.getElementById('userDisplay').textContent = '👤 ' + getUsername();

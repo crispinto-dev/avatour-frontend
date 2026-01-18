@@ -3,11 +3,7 @@
  * Gestisce login/logout tramite API backend con JWT
  */
 
-// AUTH_KEY è definito in admin.js (deve essere caricato prima)
-// Se auth.js viene usato standalone (es. login.html), definiamo un fallback
-if (typeof AUTH_KEY === 'undefined') {
-    var AUTH_KEY = 'avatour_admin_token';
-}
+const AUTH_KEY = 'avatour_admin_token';
 const USER_KEY = 'avatour_user';
 
 // API_BASE è definito in admin.js
