@@ -294,11 +294,20 @@ function initMapPicker() {
 }
 
 /**
- * Gestione selezione lingue e input video dinamici
+ * Gestione selezione lingue e input video/descrizioni dinamici
  */
 function setupLanguageSelection() {
     const languageCheckboxes = document.querySelectorAll('input[name="languages"]');
     const videoInputsContainer = document.getElementById('videoInputs');
+    const translationsContainer = document.getElementById('translationsInputs');
+
+    const langNames = {
+        it: '🇮🇹 Italiano',
+        en: '🇬🇧 Inglese',
+        de: '🇩🇪 Tedesco',
+        fr: '🇫🇷 Francese',
+        es: '🇪🇸 Spagnolo'
+    };
 
     function updateVideoInputs() {
         const selectedLanguages = Array.from(languageCheckboxes)
@@ -309,14 +318,6 @@ function setupLanguageSelection() {
             videoInputsContainer.innerHTML = '<p style="color: #6b7280;">Seleziona almeno una lingua per configurare i video</p>';
             return;
         }
-
-        const langNames = {
-            it: '🇮🇹 Italiano',
-            en: '🇬🇧 Inglese',
-            de: '🇩🇪 Tedesco',
-            fr: '🇫🇷 Francese',
-            es: '🇪🇸 Spagnolo'
-        };
 
         videoInputsContainer.innerHTML = selectedLanguages.map(lang => `
             <div class="video-input-group">
@@ -345,12 +346,43 @@ function setupLanguageSelection() {
         `).join('');
     }
 
+    function updateTranslationsInputs() {
+        if (!translationsContainer) return;
+
+        const selectedLanguages = Array.from(languageCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        if (selectedLanguages.length === 0) {
+            translationsContainer.innerHTML = '<p style="color: #6b7280;">Seleziona almeno una lingua per inserire le descrizioni</p>';
+            return;
+        }
+
+        translationsContainer.innerHTML = selectedLanguages.map(lang => `
+            <div class="translation-input-group">
+                <div class="translation-input-header">
+                    ${langNames[lang]}
+                </div>
+
+                <div class="form-group">
+                    <label for="trans_description_${lang}">Descrizione (${lang.toUpperCase()})</label>
+                    <textarea id="trans_description_${lang}" name="trans_description_${lang}"
+                              rows="3" placeholder="Descrizione del POI in ${langNames[lang]}..."></textarea>
+                </div>
+            </div>
+        `).join('');
+    }
+
     languageCheckboxes.forEach(cb => {
-        cb.addEventListener('change', updateVideoInputs);
+        cb.addEventListener('change', () => {
+            updateVideoInputs();
+            updateTranslationsInputs();
+        });
     });
 
     // Init
     updateVideoInputs();
+    updateTranslationsInputs();
 }
 
 /**
@@ -396,6 +428,18 @@ function collectPOIFormData() {
         videos[lang] = { host, video_id };
     });
 
+    // Raccogli le traduzioni per ogni lingua
+    const translations = {};
+    languages.forEach(lang => {
+        const descriptionEl = document.getElementById(`trans_description_${lang}`);
+        if (descriptionEl) {
+            const description = descriptionEl.value.trim();
+            if (description) {
+                translations[lang] = { description };
+            }
+        }
+    });
+
     return {
         poi_code,
         client_slug: clientSlug,
@@ -405,7 +449,8 @@ function collectPOIFormData() {
         lat: parseFloat(document.getElementById('lat').value),
         lng: parseFloat(document.getElementById('lng').value),
         languages,
-        videos
+        videos,
+        translations
     };
 }
 
@@ -496,19 +541,34 @@ function populatePOIForm(poi) {
             currentMap.setView([poi.lat, poi.lng], 13);
         }
 
-        // Popola video inputs
+        // Popola video inputs e traduzioni
         setupLanguageSelection();
 
-        // Popola dati video esistenti
+        // Popola dati video e traduzioni esistenti
         setTimeout(() => {
-            Object.keys(poi.videos).forEach(lang => {
-                const video = poi.videos[lang];
-                const hostSelect = document.getElementById(`video_host_${lang}`);
-                const idInput = document.getElementById(`video_id_${lang}`);
+            // Video
+            if (poi.videos) {
+                Object.keys(poi.videos).forEach(lang => {
+                    const video = poi.videos[lang];
+                    const hostSelect = document.getElementById(`video_host_${lang}`);
+                    const idInput = document.getElementById(`video_id_${lang}`);
 
-                if (hostSelect) hostSelect.value = video.host;
-                if (idInput) idInput.value = video.video_id;
-            });
+                    if (hostSelect) hostSelect.value = video.host;
+                    if (idInput) idInput.value = video.video_id;
+                });
+            }
+
+            // Traduzioni
+            if (poi.translations) {
+                Object.keys(poi.translations).forEach(lang => {
+                    const trans = poi.translations[lang];
+                    const descInput = document.getElementById(`trans_description_${lang}`);
+
+                    if (descInput && trans.description) {
+                        descInput.value = trans.description;
+                    }
+                });
+            }
         }, 100);
     }, 500);
 }

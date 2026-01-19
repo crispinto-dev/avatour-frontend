@@ -131,14 +131,13 @@ class AvatourApp {
             console.log('POI caricato:', poi);
             this.currentPoi = poi;
 
-            // Aggiorna UI
-            this.elements.poiTitle.textContent = poi.name;
-            this.elements.poiDescription.textContent = poi.description || '';
-
             // Carica video nella lingua del browser
             const userLang = navigator.language.slice(0, 2);
             const initialLang = poi.languages.includes(userLang) ? userLang : poi.languages[0];
             this.currentLanguage = initialLang;
+
+            // Aggiorna UI con titolo e descrizione nella lingua corrente
+            this.updatePOIContent(poi, this.currentLanguage);
 
             // Init selettore lingua
             this.initLanguageSelector(poi);
@@ -152,6 +151,24 @@ class AvatourApp {
             this.showError('Impossibile caricare il punto di interesse');
             this.hideLoading();
         }
+    }
+
+    /**
+     * Aggiorna titolo e descrizione del POI nella lingua specificata
+     */
+    updatePOIContent(poi, lang) {
+        // Usa la traduzione se disponibile, altrimenti il valore di default
+        let title = poi.name;
+        let description = poi.description || '';
+
+        if (poi.translations && poi.translations[lang]) {
+            const trans = poi.translations[lang];
+            if (trans.name) title = trans.name;
+            if (trans.description) description = trans.description;
+        }
+
+        this.elements.poiTitle.textContent = title;
+        this.elements.poiDescription.textContent = description;
     }
 
     loadVideo(poi, lang) {
@@ -742,6 +759,9 @@ class AvatourApp {
         document.querySelectorAll('.lang-option').forEach(option => {
             option.classList.toggle('active', option.dataset.lang === lang);
         });
+
+        // Aggiorna titolo e descrizione nella nuova lingua
+        this.updatePOIContent(this.currentPoi, lang);
 
         // Reload video with new language
         this.loadVideo(this.currentPoi, lang);

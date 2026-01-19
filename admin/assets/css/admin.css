@@ -632,6 +632,30 @@ body {
     color: var(--gray-900);
 }
 
+/* Translation Inputs */
+.translation-input-group {
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: var(--gray-50);
+}
+
+.translation-input-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 15px;
+}
+
+.translation-input-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
 /* ========================================
    MODAL
    ======================================== */
