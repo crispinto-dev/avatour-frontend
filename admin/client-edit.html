@@ -186,6 +186,47 @@
                         <button type="submit" class="btn-primary">💾 Salva Modifiche</button>
                     </div>
                 </form>
+
+                <!-- Sezione Codice Embed -->
+                <div id="embedSection" class="form-section embed-section" style="display: none; margin-top: 32px;">
+                    <h3>📋 Codice Embed per Siti Esterni</h3>
+                    <p style="color: #64748b; margin-bottom: 20px;">
+                        Copia questi codici per incorporare la mappa e i video AVATOUR nel tuo sito web.
+                    </p>
+
+                    <!-- Embed Mappa -->
+                    <div class="embed-block">
+                        <div class="embed-header">
+                            <h4>🗺️ Mappa Interattiva POI</h4>
+                            <button type="button" onclick="copyEmbedCode('mapEmbed')" class="btn-copy">
+                                📋 Copia
+                            </button>
+                        </div>
+                        <p class="embed-description">Iframe responsive con la mappa di tutti i POI del cliente.</p>
+                        <textarea id="mapEmbed" class="embed-code" readonly></textarea>
+                    </div>
+
+                    <!-- Lista POI con link -->
+                    <div class="embed-block">
+                        <div class="embed-header">
+                            <h4>📍 Lista POI con Link Video</h4>
+                            <button type="button" onclick="copyEmbedCode('poiListEmbed')" class="btn-copy">
+                                📋 Copia
+                            </button>
+                        </div>
+                        <p class="embed-description">HTML con la lista dei POI e link diretti ai video.</p>
+                        <textarea id="poiListEmbed" class="embed-code embed-code-large" readonly></textarea>
+                    </div>
+
+                    <!-- Link diretti -->
+                    <div class="embed-block">
+                        <div class="embed-header">
+                            <h4>🔗 Link Diretti ai Video</h4>
+                        </div>
+                        <p class="embed-description">URL diretti per ogni POI (utili per QR Code o condivisione).</p>
+                        <div id="directLinksContainer" class="direct-links-container"></div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>

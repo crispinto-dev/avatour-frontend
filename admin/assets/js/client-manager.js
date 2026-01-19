@@ -190,6 +190,9 @@ async function initClientEditForm() {
         // Carica statistiche
         await loadClientStats(client.slug);
 
+        // Genera codici embed
+        await generateEmbedCodes(client.slug);
+
         // Nascondi loading, mostra form
         document.getElementById('loadingMessage').style.display = 'none';
         document.getElementById('clientForm').style.display = 'block';
@@ -335,4 +338,192 @@ async function deleteClient(slug) {
         console.error('Errore eliminazione cliente:', error);
         alert('Errore durante l\'eliminazione: ' + error.message);
     }
+}
+
+// ============================================
+// EMBED CODE GENERATOR
+// ============================================
+
+/**
+ * Genera e mostra i codici embed per il cliente
+ */
+async function generateEmbedCodes(clientSlug) {
+    const embedSection = document.getElementById('embedSection');
+    if (!embedSection) return;
+
+    try {
+        // Carica POI del cliente
+        const allPois = await fetchAuthAPI('/admin/pois');
+        const clientPOIs = allPois.filter(poi => {
+            const poiSlug = poi.client?.slug || poi.client_slug;
+            return poiSlug === clientSlug;
+        });
+
+        if (clientPOIs.length === 0) {
+            embedSection.style.display = 'block';
+            embedSection.innerHTML = `
+                <h3>📋 Codice Embed per Siti Esterni</h3>
+                <p style="color: #64748b; padding: 20px; background: #f1f5f9; border-radius: 8px; text-align: center;">
+                    Nessun POI trovato per questo cliente. Aggiungi dei POI per generare i codici embed.
+                </p>
+            `;
+            return;
+        }
+
+        // Base URL (prendi dall'ambiente o usa default)
+        const baseUrl = window.location.origin.replace('/admin', '').replace(':3000', ':3000');
+        const frontendUrl = baseUrl.includes('admin') ? baseUrl.replace('/admin', '') : baseUrl;
+
+        // Genera codice iframe mappa
+        const mapEmbedCode = generateMapEmbedCode(clientSlug, frontendUrl);
+        document.getElementById('mapEmbed').value = mapEmbedCode;
+
+        // Genera lista POI HTML
+        const poiListCode = generatePOIListEmbedCode(clientPOIs, frontendUrl);
+        document.getElementById('poiListEmbed').value = poiListCode;
+
+        // Genera link diretti
+        generateDirectLinks(clientPOIs, frontendUrl);
+
+        // Mostra sezione
+        embedSection.style.display = 'block';
+
+    } catch (error) {
+        console.error('Errore generazione codici embed:', error);
+    }
+}
+
+/**
+ * Genera il codice iframe per la mappa
+ */
+function generateMapEmbedCode(clientSlug, baseUrl) {
+    return `<!-- AVATOUR Mappa POI - ${clientSlug} -->
+<div style="position: relative; width: 100%; padding-bottom: 75%; height: 0; overflow: hidden;">
+    <iframe
+        src="${baseUrl}/map.html?client=${clientSlug}&embed=true"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px;"
+        allowfullscreen
+        loading="lazy"
+        title="AVATOUR Mappa POI ${clientSlug}">
+    </iframe>
+</div>
+<!-- Fine AVATOUR Mappa -->`;
+}
+
+/**
+ * Genera il codice HTML per la lista POI
+ */
+function generatePOIListEmbedCode(pois, baseUrl) {
+    const poiItems = pois.map(poi => {
+        const name = poi.name || poi.poi_code;
+        const description = poi.description ? poi.description.substring(0, 100) + '...' : '';
+        const videoUrl = `${baseUrl}/poi/${poi.poi_code}`;
+
+        return `    <li style="margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+        <a href="${videoUrl}" target="_blank" style="text-decoration: none; color: #1e40af; font-weight: 600;">
+            📍 ${name}
+        </a>
+        ${description ? `<p style="margin: 8px 0 0; color: #64748b; font-size: 14px;">${description}</p>` : ''}
+    </li>`;
+    }).join('\n');
+
+    return `<!-- AVATOUR Lista POI -->
+<div class="avatour-poi-list" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+    <h3 style="color: #1e40af; margin-bottom: 16px;">🎬 Tour Virtuali Disponibili</h3>
+    <ul style="list-style: none; padding: 0; margin: 0;">
+${poiItems}
+    </ul>
+    <p style="margin-top: 16px; font-size: 12px; color: #94a3b8; text-align: center;">
+        Powered by <a href="https://avatour.it" target="_blank" style="color: #f59e0b;">AVATOUR</a>
+    </p>
+</div>
+<!-- Fine AVATOUR Lista POI -->`;
+}
+
+/**
+ * Genera i link diretti ai video
+ */
+function generateDirectLinks(pois, baseUrl) {
+    const container = document.getElementById('directLinksContainer');
+    if (!container) return;
+
+    container.innerHTML = pois.map(poi => {
+        const name = poi.name || poi.poi_code;
+        const videoUrl = `${baseUrl}/poi/${poi.poi_code}`;
+
+        return `
+            <div class="direct-link-item">
+                <span class="poi-name">📍 ${name}</span>
+                <div class="link-actions">
+                    <input type="text" value="${videoUrl}" readonly class="link-input">
+                    <button type="button" onclick="copyToClipboard('${videoUrl}')" class="btn-copy-small" title="Copia link">
+                        📋
+                    </button>
+                    <a href="${videoUrl}" target="_blank" class="btn-open-small" title="Apri">
+                        🔗
+                    </a>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Copia il codice embed negli appunti
+ */
+function copyEmbedCode(textareaId) {
+    const textarea = document.getElementById(textareaId);
+    if (!textarea) return;
+
+    textarea.select();
+    textarea.setSelectionRange(0, 99999); // Per mobile
+
+    try {
+        navigator.clipboard.writeText(textarea.value).then(() => {
+            showCopyFeedback(textareaId);
+        });
+    } catch (err) {
+        // Fallback per browser più vecchi
+        document.execCommand('copy');
+        showCopyFeedback(textareaId);
+    }
+}
+
+/**
+ * Copia un testo negli appunti
+ */
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Feedback visivo temporaneo
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✓';
+        btn.style.background = '#10b981';
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = '';
+        }, 1500);
+    });
+}
+
+/**
+ * Mostra feedback dopo la copia
+ */
+function showCopyFeedback(textareaId) {
+    const textarea = document.getElementById(textareaId);
+    const originalBg = textarea.style.background;
+    textarea.style.background = '#d1fae5';
+    setTimeout(() => {
+        textarea.style.background = originalBg || '#f8fafc';
+    }, 1500);
+
+    // Alert o toast
+    const toast = document.createElement('div');
+    toast.className = 'copy-toast';
+    toast.textContent = '✓ Codice copiato!';
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 2000);
 }

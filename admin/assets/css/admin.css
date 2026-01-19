@@ -1006,3 +1006,212 @@ body {
         justify-content: center;
     }
 }
+
+/* ========================================
+   EMBED CODE SECTION
+   ======================================== */
+
+.embed-section {
+    background: var(--white);
+    border: 2px dashed var(--gray-300);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.embed-section h3 {
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.embed-block {
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.embed-block:last-child {
+    margin-bottom: 0;
+}
+
+.embed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.embed-header h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+}
+
+.embed-description {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 12px;
+}
+
+.embed-code {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    resize: vertical;
+    color: var(--gray-700);
+}
+
+.embed-code-large {
+    min-height: 200px;
+}
+
+.btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-copy:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Direct Links */
+.direct-links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.direct-link-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+}
+
+.direct-link-item .poi-name {
+    font-weight: 500;
+    color: var(--gray-800);
+    min-width: 150px;
+}
+
+.direct-link-item .link-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.direct-link-item .link-input {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-family: monospace;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    color: var(--primary);
+}
+
+.btn-copy-small,
+.btn-open-small {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--gray-200);
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-copy-small:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.btn-open-small:hover {
+    background: var(--accent);
+}
+
+/* Copy Toast Notification */
+.copy-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--success);
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 1.7s forwards;
+    z-index: 9999;
+}
+
+@keyframes toastIn {
+    from {
+        transform: translateX(-50%) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes toastOut {
+    from {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-50%) translateY(20px);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .embed-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .direct-link-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .direct-link-item .link-actions {
+        width: 100%;
+    }
+}
