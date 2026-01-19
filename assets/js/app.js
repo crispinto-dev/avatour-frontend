@@ -28,6 +28,8 @@ class AvatourApp {
         this.currentLanguage = 'it';
         this.isPlaying = false;
         this.isFullscreen = false;
+        this.vimeoPlayer = null; // Vimeo Player instance
+        this.allPois = []; // Lista di tutti i POI per navigazione
 
         // DOM elements
         this.elements = {};
@@ -60,6 +62,9 @@ class AvatourApp {
             const urlParams = new URLSearchParams(window.location.search);
             poiCode = urlParams.get('poi') || 'PAL-001';
         }
+
+        // Load all POIs for navigation
+        await this.loadAllPOIs();
 
         // Load POI data from API
         await this.loadPOIData(poiCode);
@@ -102,6 +107,17 @@ class AvatourApp {
         if (tutorial) {
             tutorial.classList.add('hidden');
             localStorage.setItem('avatour_visited', 'true');
+        }
+    }
+
+    async loadAllPOIs() {
+        try {
+            const response = await fetchAPI('/poi');
+            this.allPois = response.pois || [];
+            console.log('Tutti i POI caricati:', this.allPois.length);
+        } catch (error) {
+            console.error('Errore caricamento lista POI:', error);
+            this.allPois = [];
         }
     }
 
@@ -178,10 +194,16 @@ class AvatourApp {
             existingIframe.remove();
         }
 
-        // Crea iframe per Vimeo
+        // Distruggi player Vimeo esistente
+        if (this.vimeoPlayer) {
+            this.vimeoPlayer.destroy();
+            this.vimeoPlayer = null;
+        }
+
+        // Crea iframe per Vimeo (senza controlli nativi)
         const iframe = document.createElement('iframe');
         iframe.id = 'vimeo-iframe';
-        iframe.src = `${vimeoUrl}?autoplay=0&title=0&byline=0&portrait=0&dnt=1`;
+        iframe.src = `${vimeoUrl}?autoplay=0&title=0&byline=0&portrait=0&controls=0&dnt=1&transparent=1`;
         iframe.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;';
         iframe.allow = 'autoplay; fullscreen; picture-in-picture';
         iframe.allowFullscreen = true;
@@ -190,13 +212,73 @@ class AvatourApp {
         const videoContainer = document.querySelector('.video-container');
         videoContainer.appendChild(iframe);
 
-        // Nascondi loading
-        this.hideLoading();
+        // Inizializza Vimeo Player API
+        this.vimeoPlayer = new Vimeo.Player(iframe);
 
-        // Nascondi controlli custom (Vimeo ha i suoi)
+        // Bind eventi Vimeo ai nostri controlli
+        this.setupVimeoEvents();
+
+        // Mostra controlli custom
         if (this.elements.videoControls) {
-            this.elements.videoControls.style.display = 'none';
+            this.elements.videoControls.style.display = '';
         }
+
+        // Nascondi loading quando pronto
+        this.vimeoPlayer.ready().then(() => {
+            this.hideLoading();
+            // Ottieni durata
+            this.vimeoPlayer.getDuration().then(duration => {
+                this.elements.duration.textContent = this.formatTime(duration);
+            });
+        });
+    }
+
+    setupVimeoEvents() {
+        if (!this.vimeoPlayer) return;
+
+        // Play/Pause
+        this.vimeoPlayer.on('play', () => {
+            this.isPlaying = true;
+            this.elements.playIcon.classList.add('hidden');
+            this.elements.pauseIcon.classList.remove('hidden');
+        });
+
+        this.vimeoPlayer.on('pause', () => {
+            this.isPlaying = false;
+            this.elements.playIcon.classList.remove('hidden');
+            this.elements.pauseIcon.classList.add('hidden');
+        });
+
+        this.vimeoPlayer.on('ended', () => {
+            this.isPlaying = false;
+            this.elements.playIcon.classList.remove('hidden');
+            this.elements.pauseIcon.classList.add('hidden');
+        });
+
+        // Progresso
+        this.vimeoPlayer.on('timeupdate', (data) => {
+            const percent = (data.seconds / data.duration) * 100;
+            this.elements.progressFilled.style.width = percent + '%';
+            this.elements.currentTime.textContent = this.formatTime(data.seconds);
+        });
+
+        // Buffer
+        this.vimeoPlayer.on('progress', (data) => {
+            const percent = (data.seconds / data.duration) * 100;
+            this.elements.progressBuffer.style.width = percent + '%';
+        });
+
+        // Volume
+        this.vimeoPlayer.on('volumechange', (data) => {
+            if (data.volume === 0) {
+                this.elements.volumeIcon.classList.add('hidden');
+                this.elements.muteIcon.classList.remove('hidden');
+            } else {
+                this.elements.volumeIcon.classList.remove('hidden');
+                this.elements.muteIcon.classList.add('hidden');
+            }
+            this.elements.volumeSlider.value = data.volume * 100;
+        });
     }
 
     initLanguageSelector(poi) {
@@ -400,41 +482,75 @@ class AvatourApp {
     }
 
     togglePlay() {
-        if (this.elements.video.paused) {
-            this.elements.video.play();
+        if (this.vimeoPlayer) {
+            // Vimeo Player
+            this.vimeoPlayer.getPaused().then(paused => {
+                if (paused) {
+                    this.vimeoPlayer.play();
+                } else {
+                    this.vimeoPlayer.pause();
+                }
+            });
         } else {
-            this.elements.video.pause();
+            // HTML5 Video
+            if (this.elements.video.paused) {
+                this.elements.video.play();
+            } else {
+                this.elements.video.pause();
+            }
         }
     }
 
     restartVideo() {
-        this.elements.video.currentTime = 0;
-        this.elements.video.play();
+        if (this.vimeoPlayer) {
+            this.vimeoPlayer.setCurrentTime(0).then(() => {
+                this.vimeoPlayer.play();
+            });
+        } else {
+            this.elements.video.currentTime = 0;
+            this.elements.video.play();
+        }
     }
 
     toggleMute() {
-        this.elements.video.muted = !this.elements.video.muted;
-
-        if (this.elements.video.muted) {
-            this.elements.volumeIcon.classList.add('hidden');
-            this.elements.muteIcon.classList.remove('hidden');
+        if (this.vimeoPlayer) {
+            this.vimeoPlayer.getVolume().then(volume => {
+                if (volume > 0) {
+                    this._lastVolume = volume;
+                    this.vimeoPlayer.setVolume(0);
+                } else {
+                    this.vimeoPlayer.setVolume(this._lastVolume || 0.8);
+                }
+            });
         } else {
-            this.elements.volumeIcon.classList.remove('hidden');
-            this.elements.muteIcon.classList.add('hidden');
+            this.elements.video.muted = !this.elements.video.muted;
+
+            if (this.elements.video.muted) {
+                this.elements.volumeIcon.classList.add('hidden');
+                this.elements.muteIcon.classList.remove('hidden');
+            } else {
+                this.elements.volumeIcon.classList.remove('hidden');
+                this.elements.muteIcon.classList.add('hidden');
+            }
         }
     }
 
     setVolume(value) {
-        this.elements.video.volume = value / 100;
-
-        if (value == 0) {
-            this.elements.video.muted = true;
-            this.elements.volumeIcon.classList.add('hidden');
-            this.elements.muteIcon.classList.remove('hidden');
+        const vol = value / 100;
+        if (this.vimeoPlayer) {
+            this.vimeoPlayer.setVolume(vol);
         } else {
-            this.elements.video.muted = false;
-            this.elements.volumeIcon.classList.remove('hidden');
-            this.elements.muteIcon.classList.add('hidden');
+            this.elements.video.volume = vol;
+
+            if (value == 0) {
+                this.elements.video.muted = true;
+                this.elements.volumeIcon.classList.add('hidden');
+                this.elements.muteIcon.classList.remove('hidden');
+            } else {
+                this.elements.video.muted = false;
+                this.elements.volumeIcon.classList.remove('hidden');
+                this.elements.muteIcon.classList.add('hidden');
+            }
         }
     }
 
@@ -499,7 +615,14 @@ class AvatourApp {
     seek(e) {
         const rect = this.elements.progressBar.getBoundingClientRect();
         const percent = (e.clientX - rect.left) / rect.width;
-        this.elements.video.currentTime = percent * this.elements.video.duration;
+
+        if (this.vimeoPlayer) {
+            this.vimeoPlayer.getDuration().then(duration => {
+                this.vimeoPlayer.setCurrentTime(percent * duration);
+            });
+        } else {
+            this.elements.video.currentTime = percent * this.elements.video.duration;
+        }
     }
 
     formatTime(seconds) {
@@ -511,13 +634,43 @@ class AvatourApp {
     }
 
     previousPOI() {
-        // Da implementare: navigazione tra POI
-        this.showError('Navigazione POI non ancora implementata');
+        if (!this.currentPoi || this.allPois.length === 0) return;
+
+        // Filtra POI dello stesso client
+        const clientPois = this.allPois.filter(p =>
+            p.client_slug === this.currentPoi.client_slug
+        ).sort((a, b) => a.poi_code.localeCompare(b.poi_code));
+
+        const currentIndex = clientPois.findIndex(p => p.poi_code === this.currentPoi.poi_code);
+
+        if (currentIndex > 0) {
+            const prevPoi = clientPois[currentIndex - 1];
+            window.location.href = `/poi/${prevPoi.poi_code}`;
+        } else if (clientPois.length > 1) {
+            // Vai all'ultimo se siamo al primo (loop)
+            const lastPoi = clientPois[clientPois.length - 1];
+            window.location.href = `/poi/${lastPoi.poi_code}`;
+        }
     }
 
     nextPOI() {
-        // Da implementare: navigazione tra POI
-        this.showError('Navigazione POI non ancora implementata');
+        if (!this.currentPoi || this.allPois.length === 0) return;
+
+        // Filtra POI dello stesso client
+        const clientPois = this.allPois.filter(p =>
+            p.client_slug === this.currentPoi.client_slug
+        ).sort((a, b) => a.poi_code.localeCompare(b.poi_code));
+
+        const currentIndex = clientPois.findIndex(p => p.poi_code === this.currentPoi.poi_code);
+
+        if (currentIndex < clientPois.length - 1) {
+            const nextPoi = clientPois[currentIndex + 1];
+            window.location.href = `/poi/${nextPoi.poi_code}`;
+        } else if (clientPois.length > 1) {
+            // Vai al primo se siamo all'ultimo (loop)
+            const firstPoi = clientPois[0];
+            window.location.href = `/poi/${firstPoi.poi_code}`;
+        }
     }
 
     goToMap() {
