@@ -266,7 +266,7 @@ async function handlePOISubmit(e) {
 
     try {
         // Chiama API per creare POI
-        await fetchAPI('/admin/pois', {
+        await fetchAPI('/admin/poi', {
             method: 'POST',
             body: JSON.stringify(formData)
         });
@@ -412,7 +412,7 @@ async function handlePOIUpdate(e, poiCode) {
     delete formData.poi_code; // Non si può modificare il codice
 
     try {
-        await fetchAPI(`/admin/pois/${poiCode}`, {
+        await fetchAPI(`/admin/poi/${poiCode}`, {
             method: 'PUT',
             body: JSON.stringify(formData)
         });
@@ -456,7 +456,7 @@ function closeDeleteModal() {
  */
 async function deletePOI(poiCode) {
     try {
-        await fetchAPI(`/admin/pois/${poiCode}`, {
+        await fetchAPI(`/admin/poi/${poiCode}`, {
             method: 'DELETE'
         });
 
