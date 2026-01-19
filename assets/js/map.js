@@ -343,11 +343,12 @@ class AvatourMap {
         const backBtn = document.getElementById('back-btn');
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                // Check if there's a previous page in history
-                if (document.referrer && document.referrer.includes('index.html')) {
+                // Torna alla pagina precedente se esiste e proviene dal sito
+                if (document.referrer && document.referrer.includes(window.location.host)) {
                     window.history.back();
                 } else {
-                    window.location.href = 'index.html';
+                    // Fallback: vai alla home o al POI del client corrente
+                    window.location.href = '/';
                 }
             });
         }
