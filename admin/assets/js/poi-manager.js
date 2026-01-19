@@ -23,8 +23,22 @@ async function loadPOIsList() {
             throw new Error('Formato dati non valido');
         }
 
-        displayPOIsList(allPOIs);
+        // Leggi parametro client da URL se presente
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientFromUrl = urlParams.get('client');
+
+        // Se c'è un filtro client nell'URL, pre-selezionalo
+        if (clientFromUrl) {
+            const filterSelect = document.getElementById('filterClient');
+            if (filterSelect) {
+                filterSelect.value = clientFromUrl;
+            }
+        }
+
         setupFilters();
+
+        // Applica il filtro (mostrerà filtrato se c'è parametro URL)
+        filterPOIs();
     } catch (error) {
         console.error('Errore caricamento POI:', error);
         document.getElementById('poisTableBody').innerHTML = `

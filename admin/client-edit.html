@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifica Cliente - AVATOUR Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>AVATOUR</h2>
+                <p>Admin</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="poi-list.html" class="nav-item">
+                    <span>📍</span> POI
+                </a>
+                <a href="clients.html" class="nav-item active">
+                    <span>🏢</span> Clienti
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-logout">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Modifica Cliente: <span id="currentClientSlug">-</span></h1>
+                <a href="clients.html" class="btn-secondary">← Torna ai Clienti</a>
+            </header>
+
+            <div class="content-section">
+                <div id="loadingMessage" style="text-align: center; padding: 40px;">
+                    <div class="loading-spinner"></div>
+                    Caricamento dati cliente...
+                </div>
+
+                <form id="clientForm" class="poi-form" style="display: none;">
+                    <!-- Dati base -->
+                    <div class="form-section">
+                        <h3>Dati Anagrafica</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clientSlug">Sigla (Slug)</label>
+                                <input type="text" id="clientSlug" name="slug"
+                                       readonly disabled style="background: #f1f5f9;">
+                                <small>Il codice cliente non può essere modificato</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="clientName">Nome Cliente *</label>
+                                <input type="text" id="clientName" name="name"
+                                       placeholder="es: Palinuro Tourism" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clientEmail">Email</label>
+                                <input type="email" id="clientEmail" name="email"
+                                       placeholder="es: info@cliente.it">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="clientLogo">URL Logo</label>
+                                <input type="url" id="clientLogo" name="logo_url"
+                                       placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lingue -->
+                    <div class="form-section">
+                        <h3>Configurazione Lingue</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="defaultLang">Lingua Predefinita</label>
+                                <select id="defaultLang" name="default_lang">
+                                    <option value="it">Italiano</option>
+                                    <option value="en">English</option>
+                                    <option value="de">Deutsch</option>
+                                    <option value="fr">Français</option>
+                                    <option value="es">Español</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Lingue Disponibili</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="it">
+                                        🇮🇹 Italiano
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="en">
+                                        🇬🇧 English
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="de">
+                                        🇩🇪 Deutsch
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="fr">
+                                        🇫🇷 Français
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="es">
+                                        🇪🇸 Español
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modifica Password -->
+                    <div class="form-section">
+                        <h3>Modifica Password Admin Cliente</h3>
+                        <p style="color: #64748b; margin-bottom: 16px;">
+                            Lascia vuoto per mantenere la password attuale.
+                        </p>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clientPassword">Nuova Password</label>
+                                <input type="password" id="clientPassword" name="password"
+                                       placeholder="Lascia vuoto per non modificare"
+                                       minlength="6">
+                                <small>Minimo 6 caratteri</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="clientPasswordConfirm">Conferma Nuova Password</label>
+                                <input type="password" id="clientPasswordConfirm"
+                                       placeholder="Ripeti la nuova password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stato -->
+                    <div class="form-section">
+                        <h3>Stato</h3>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="isActive" name="is_active">
+                                Cliente Attivo
+                            </label>
+                            <small>Se disattivato, i POI del cliente non saranno visibili pubblicamente</small>
+                        </div>
+                    </div>
+
+                    <!-- Statistiche -->
+                    <div class="form-section">
+                        <h3>Statistiche Cliente</h3>
+                        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                            <div class="stat-box" style="background: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 24px; font-weight: 700; color: #1e40af;" id="clientPOICount">-</div>
+                                <div style="color: #64748b; font-size: 14px;">POI Totali</div>
+                            </div>
+                            <div class="stat-box" style="background: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 24px; font-weight: 700; color: #059669;" id="clientVideoCount">-</div>
+                                <div style="color: #64748b; font-size: 14px;">Video Totali</div>
+                            </div>
+                            <div class="stat-box" style="background: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 24px; font-weight: 700; color: #f59e0b;" id="clientCreatedAt">-</div>
+                                <div style="color: #64748b; font-size: 14px;">Data Creazione</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <a href="clients.html" class="btn-secondary">Annulla</a>
+                        <button type="submit" class="btn-primary">💾 Salva Modifiche</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script src="assets/js/client-manager.js"></script>
+    <script>
+        checkAuth();
+        initClientEditForm();
+    </script>
+</body>
+</html>

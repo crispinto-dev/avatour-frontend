@@ -41,100 +41,39 @@
             </header>
 
             <div class="content-section">
-                <div class="clients-grid">
-                    <div class="client-card">
-                        <div class="client-header">
-                            <h3>PAL - Palinuro</h3>
-                            <span class="client-badge">Attivo</span>
-                        </div>
-                        <div class="client-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">POI:</span>
-                                <span class="stat-value" id="palPOIs">-</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Video:</span>
-                                <span class="stat-value" id="palVideos">-</span>
-                            </div>
-                        </div>
-                        <div class="client-actions">
-                            <a href="poi-list.html?client=PAL" class="btn-sm">Vedi POI</a>
-                            <a href="../map.html?client=PAL" target="_blank" class="btn-sm btn-outline">Visualizza Mappa</a>
-                        </div>
-                    </div>
-
-                    <div class="client-card">
-                        <div class="client-header">
-                            <h3>ROM - Roma</h3>
-                            <span class="client-badge">Attivo</span>
-                        </div>
-                        <div class="client-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">POI:</span>
-                                <span class="stat-value" id="romPOIs">-</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Video:</span>
-                                <span class="stat-value" id="romVideos">-</span>
-                            </div>
-                        </div>
-                        <div class="client-actions">
-                            <a href="poi-list.html?client=ROM" class="btn-sm">Vedi POI</a>
-                            <a href="../map.html?client=ROM" target="_blank" class="btn-sm btn-outline">Visualizza Mappa</a>
-                        </div>
-                    </div>
-
-                    <div class="client-card">
-                        <div class="client-header">
-                            <h3>BST - Bassano</h3>
-                            <span class="client-badge client-badge-inactive">In sviluppo</span>
-                        </div>
-                        <div class="client-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">POI:</span>
-                                <span class="stat-value" id="bstPOIs">-</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Video:</span>
-                                <span class="stat-value" id="bstVideos">-</span>
-                            </div>
-                        </div>
-                        <div class="client-actions">
-                            <a href="poi-list.html?client=BST" class="btn-sm">Vedi POI</a>
-                            <a href="../map.html?client=BST" target="_blank" class="btn-sm btn-outline">Visualizza Mappa</a>
-                        </div>
-                    </div>
-
-                    <div class="client-card">
-                        <div class="client-header">
-                            <h3>TSC - Tuscia</h3>
-                            <span class="client-badge client-badge-inactive">In sviluppo</span>
-                        </div>
-                        <div class="client-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">POI:</span>
-                                <span class="stat-value" id="tscPOIs">-</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Video:</span>
-                                <span class="stat-value" id="tscVideos">-</span>
-                            </div>
-                        </div>
-                        <div class="client-actions">
-                            <a href="poi-list.html?client=TSC" class="btn-sm">Vedi POI</a>
-                            <a href="../map.html?client=TSC" target="_blank" class="btn-sm btn-outline">Visualizza Mappa</a>
-                        </div>
+                <div class="clients-grid" id="clientsGrid">
+                    <div style="text-align: center; padding: 40px; grid-column: 1/-1;">
+                        <div class="loading-spinner"></div>
+                        Caricamento clienti...
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Modal Conferma Delete Cliente -->
+    <div id="deleteClientModal" class="modal" style="display: none;">
+        <div class="modal-backdrop" onclick="closeDeleteClientModal()"></div>
+        <div class="modal-content">
+            <h3>Conferma Eliminazione</h3>
+            <p>Sei sicuro di voler eliminare questo cliente?</p>
+            <p style="color: #dc2626; font-weight: 500;">
+                Tutti i POI e i video associati verranno eliminati permanentemente!
+            </p>
+            <p id="deleteClientName" style="font-weight: 600; color: #1e40af;"></p>
+            <div class="modal-actions">
+                <button onclick="closeDeleteClientModal()" class="btn-secondary">Annulla</button>
+                <button id="confirmDeleteClient" class="btn-danger">Elimina</button>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/admin.js"></script>
+    <script src="assets/js/client-manager.js"></script>
     <script>
         checkAuth();
-        loadClientsStats();
+        loadClientsList();
     </script>
 </body>
 </html>

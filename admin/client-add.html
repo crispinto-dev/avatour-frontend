@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggiungi Cliente - AVATOUR Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>AVATOUR</h2>
+                <p>Admin</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="poi-list.html" class="nav-item">
+                    <span>📍</span> POI
+                </a>
+                <a href="clients.html" class="nav-item active">
+                    <span>🏢</span> Clienti
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-logout">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Aggiungi Nuovo Cliente</h1>
+                <a href="clients.html" class="btn-secondary">← Torna ai Clienti</a>
+            </header>
+
+            <div class="content-section">
+                <form id="clientForm" class="poi-form">
+                    <!-- Dati base -->
+                    <div class="form-section">
+                        <h3>Dati Anagrafica</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clientSlug">Sigla (Slug) *</label>
+                                <input type="text" id="clientSlug" name="slug"
+                                       placeholder="es: PAL, ROM, MIL" required
+                                       maxlength="10" style="text-transform: uppercase;">
+                                <small>Codice univoco 3-10 caratteri (maiuscolo)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="clientName">Nome Cliente *</label>
+                                <input type="text" id="clientName" name="name"
+                                       placeholder="es: Palinuro Tourism" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clientEmail">Email</label>
+                                <input type="email" id="clientEmail" name="email"
+                                       placeholder="es: info@cliente.it">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="clientLogo">URL Logo</label>
+                                <input type="url" id="clientLogo" name="logo_url"
+                                       placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lingue -->
+                    <div class="form-section">
+                        <h3>Configurazione Lingue</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="defaultLang">Lingua Predefinita</label>
+                                <select id="defaultLang" name="default_lang">
+                                    <option value="it" selected>Italiano</option>
+                                    <option value="en">English</option>
+                                    <option value="de">Deutsch</option>
+                                    <option value="fr">Français</option>
+                                    <option value="es">Español</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Lingue Disponibili</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="it" checked>
+                                        🇮🇹 Italiano
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="en">
+                                        🇬🇧 English
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="de">
+                                        🇩🇪 Deutsch
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="fr">
+                                        🇫🇷 Français
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="available_langs" value="es">
+                                        🇪🇸 Español
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credenziali Admin Cliente -->
+                    <div class="form-section">
+                        <h3>Credenziali Accesso Cliente</h3>
+                        <p style="color: #64748b; margin-bottom: 16px;">
+                            Crea un account admin per questo cliente (opzionale).
+                            L'email usata sarà quella inserita sopra o generata automaticamente.
+                        </p>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clientPassword">Password Admin Cliente</label>
+                                <input type="password" id="clientPassword" name="password"
+                                       placeholder="Lascia vuoto se non vuoi creare l'account"
+                                       minlength="6">
+                                <small>Minimo 6 caratteri. Lascia vuoto per non creare utente admin.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="clientPasswordConfirm">Conferma Password</label>
+                                <input type="password" id="clientPasswordConfirm"
+                                       placeholder="Ripeti la password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stato -->
+                    <div class="form-section">
+                        <h3>Stato</h3>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="isActive" name="is_active" checked>
+                                Cliente Attivo
+                            </label>
+                            <small>Se disattivato, i POI del cliente non saranno visibili pubblicamente</small>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <a href="clients.html" class="btn-secondary">Annulla</a>
+                        <button type="submit" class="btn-primary">💾 Salva Cliente</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script src="assets/js/client-manager.js"></script>
+    <script>
+        checkAuth();
+        initClientForm();
+    </script>
+</body>
+</html>
