@@ -49,6 +49,9 @@ class AvatourMap {
         // Show loading
         this.showLoading();
 
+        // Salva il referrer per il pulsante indietro
+        this.previousPage = document.referrer || null;
+
         // Get params from URL
         const urlParams = new URLSearchParams(window.location.search);
         const lang = urlParams.get('lang');
@@ -344,10 +347,11 @@ class AvatourMap {
         if (backBtn) {
             backBtn.addEventListener('click', () => {
                 // Torna alla pagina precedente se esiste e proviene dal sito
-                if (document.referrer && document.referrer.includes(window.location.host)) {
-                    window.history.back();
+                if (this.previousPage && this.previousPage.includes(window.location.host)) {
+                    // Usa il referrer salvato per tornare alla pagina esatta
+                    window.location.href = this.previousPage;
                 } else {
-                    // Fallback: vai alla home o al POI del client corrente
+                    // Fallback: vai alla home
                     window.location.href = '/';
                 }
             });
