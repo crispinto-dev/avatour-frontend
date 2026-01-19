@@ -66,173 +66,112 @@
 
     <!-- Main Container -->
     <div id="app-container" class="app-container hidden">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-left">
-                <button id="back-to-map" class="btn-icon" title="Torna alla mappa">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15 18l-6-6 6-6"/>
-                    </svg>
-                </button>
-            </div>
+        <!-- Fullscreen Video Container -->
+        <div class="video-wrapper">
+            <div class="video-container">
+                <video id="avatar-video" class="avatar-video" playsinline preload="metadata">
+                    <source src="" type="video/mp4">
+                    Il tuo browser non supporta il video HTML5.
+                </video>
 
-            <div class="header-center">
-                <h1 id="poi-title" class="poi-title">AVATOUR</h1>
-            </div>
-
-            <div class="header-right">
-                <!-- Language Selector -->
-                <div class="language-selector">
-                    <button id="lang-toggle" class="lang-button">
-                        <span class="flag-icon" id="current-flag">🇮🇹</span>
-                        <span class="lang-code" id="current-lang">IT</span>
-                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <div id="lang-dropdown" class="lang-dropdown hidden">
-                        <button class="lang-option" data-lang="it">
-                            <span class="flag-icon">🇮🇹</span>
-                            <span>Italiano</span>
-                        </button>
-                        <button class="lang-option" data-lang="en">
-                            <span class="flag-icon">🇬🇧</span>
-                            <span>English</span>
-                        </button>
-                        <button class="lang-option" data-lang="de">
-                            <span class="flag-icon">🇩🇪</span>
-                            <span>Deutsch</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Video Container -->
-        <div class="video-container">
-            <video id="avatar-video" class="avatar-video" playsinline preload="metadata">
-                <source src="" type="video/mp4">
-                Il tuo browser non supporta il video HTML5.
-            </video>
-
-            <!-- Video Loading -->
-            <div id="video-loading" class="video-loading">
-                <div class="spinner"></div>
-                <p>Caricamento video...</p>
-            </div>
-
-            <!-- Custom Video Controls -->
-            <div id="video-controls" class="video-controls">
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div id="progress-filled" class="progress-filled"></div>
-                        <div id="progress-buffer" class="progress-buffer"></div>
-                    </div>
-                    <div class="time-display">
-                        <span id="current-time">0:00</span>
-                        <span id="duration">0:00</span>
-                    </div>
+                <!-- Video Loading -->
+                <div id="video-loading" class="video-loading">
+                    <div class="spinner"></div>
+                    <p>Caricamento video...</p>
                 </div>
 
-                <!-- Control Buttons -->
-                <div class="controls-row">
-                    <div class="controls-left">
-                        <button id="play-pause" class="control-btn" title="Play/Pausa">
-                            <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M8 5v14l11-7z"/>
-                            </svg>
-                            <svg id="pause-icon" class="hidden" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-                            </svg>
+                <!-- Instagram-style Side Controls -->
+                <div class="side-controls">
+                    <!-- Language Selector -->
+                    <div class="side-control-item language-selector">
+                        <button id="lang-toggle" class="side-btn">
+                            <span class="flag-icon" id="current-flag">🇮🇹</span>
                         </button>
-
-                        <button id="restart" class="control-btn" title="Ricomincia">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M1 4v6h6M23 20v-6h-6"/>
-                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
-                            </svg>
-                        </button>
-
-                        <div class="volume-control">
-                            <button id="mute" class="control-btn" title="Mute/Unmute">
-                                <svg id="volume-icon" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-                                </svg>
-                                <svg id="mute-icon" class="hidden" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-                                </svg>
+                        <span class="side-label" id="current-lang">IT</span>
+                        <div id="lang-dropdown" class="lang-dropdown hidden">
+                            <button class="lang-option" data-lang="it">
+                                <span class="flag-icon">🇮🇹</span>
+                                <span>Italiano</span>
                             </button>
-                            <input id="volume-slider" type="range" min="0" max="100" value="80" class="volume-slider">
+                            <button class="lang-option" data-lang="en">
+                                <span class="flag-icon">🇬🇧</span>
+                                <span>English</span>
+                            </button>
+                            <button class="lang-option" data-lang="de">
+                                <span class="flag-icon">🇩🇪</span>
+                                <span>Deutsch</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="controls-right">
-                        <button id="subtitles" class="control-btn" title="Sottotitoli">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z"/>
+                    <!-- Map Button -->
+                    <div class="side-control-item">
+                        <button id="show-map" class="side-btn" title="Mostra mappa">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/>
+                                <path d="M8 2v16M16 6v16"/>
                             </svg>
                         </button>
+                        <span class="side-label">Mappa</span>
+                    </div>
 
-                        <button id="fullscreen" class="control-btn control-btn-highlight" title="Schermo intero">
-                            <svg id="fullscreen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                            </svg>
-                            <svg id="exit-fullscreen-icon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+                    <!-- Share Button -->
+                    <div class="side-control-item">
+                        <button id="share-btn" class="side-btn" title="Condividi">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="18" cy="5" r="3"/>
+                                <circle cx="6" cy="12" r="3"/>
+                                <circle cx="18" cy="19" r="3"/>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                             </svg>
                         </button>
+                        <span class="side-label">Condividi</span>
+                    </div>
+
+                    <!-- Mute Button -->
+                    <div class="side-control-item">
+                        <button id="mute" class="side-btn" title="Mute/Unmute">
+                            <svg id="volume-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                            </svg>
+                            <svg id="mute-icon" class="hidden" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                            </svg>
+                        </button>
+                        <span class="side-label">Audio</span>
                     </div>
                 </div>
+
+                <!-- Video Progress Bar (bottom) -->
+                <div id="video-controls" class="video-controls">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div id="progress-filled" class="progress-filled"></div>
+                            <div id="progress-buffer" class="progress-buffer"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Play/Pause overlay (tap to toggle) -->
+                <div id="play-pause-overlay" class="play-pause-overlay">
+                    <button id="play-pause" class="play-pause-btn" title="Play/Pausa">
+                        <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <svg id="pause-icon" class="hidden" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- POI Description (bottom overlay) -->
+            <div class="poi-description-overlay">
+                <h1 id="poi-title" class="poi-title-overlay">AVATOUR</h1>
+                <p id="poi-description-text">Benvenuto in AVATOUR. Seleziona un punto di interesse per iniziare.</p>
             </div>
         </div>
-
-        <!-- POI Description -->
-        <div class="poi-description">
-            <p id="poi-description-text">Benvenuto in AVATOUR. Seleziona un punto di interesse per iniziare.</p>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <!-- POI Navigation -->
-            <div class="poi-navigation">
-                <button id="prev-poi" class="nav-btn" title="POI precedente">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15 18l-6-6 6-6"/>
-                    </svg>
-                    <span>Precedente</span>
-                </button>
-
-                <button id="show-map" class="btn-map" title="Mostra mappa">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/>
-                        <path d="M8 2v16M16 6v16"/>
-                    </svg>
-                    <span>Mappa POI</span>
-                </button>
-
-                <button id="next-poi" class="nav-btn" title="POI successivo">
-                    <span>Successivo</span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 18l6-6-6-6"/>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Social Share -->
-            <div class="social-share">
-                <button id="share-btn" class="share-btn" title="Condividi">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="18" cy="5" r="3"/>
-                        <circle cx="6" cy="12" r="3"/>
-                        <circle cx="18" cy="19" r="3"/>
-                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                    </svg>
-                    <span>Condividi</span>
-                </button>
-            </div>
-        </nav>
 
         <!-- Share Modal -->
         <div id="share-modal" class="modal hidden">

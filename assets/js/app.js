@@ -259,11 +259,8 @@ class AvatourApp {
         this.vimeoPlayer.ready().then(() => {
             console.log('Vimeo player ready');
             this.hideLoading();
-            // Ottieni durata
-            this.vimeoPlayer.getDuration().then(duration => {
-                console.log('Video duration:', duration);
-                this.elements.duration.textContent = this.formatTime(duration);
-            });
+            // Show paused state initially
+            this.elements.videoContainer.classList.add('video-paused');
         }).catch(err => {
             console.error('Vimeo player ready error:', err);
             this.hideLoading();
@@ -285,25 +282,27 @@ class AvatourApp {
             this.isPlaying = true;
             this.elements.playIcon.classList.add('hidden');
             this.elements.pauseIcon.classList.remove('hidden');
+            this.elements.videoContainer.classList.remove('video-paused');
         });
 
         this.vimeoPlayer.on('pause', () => {
             this.isPlaying = false;
             this.elements.playIcon.classList.remove('hidden');
             this.elements.pauseIcon.classList.add('hidden');
+            this.elements.videoContainer.classList.add('video-paused');
         });
 
         this.vimeoPlayer.on('ended', () => {
             this.isPlaying = false;
             this.elements.playIcon.classList.remove('hidden');
             this.elements.pauseIcon.classList.add('hidden');
+            this.elements.videoContainer.classList.add('video-paused');
         });
 
         // Progresso
         this.vimeoPlayer.on('timeupdate', (data) => {
             const percent = (data.seconds / data.duration) * 100;
             this.elements.progressFilled.style.width = percent + '%';
-            this.elements.currentTime.textContent = this.formatTime(data.seconds);
         });
 
         // Buffer
@@ -321,7 +320,6 @@ class AvatourApp {
                 this.elements.volumeIcon.classList.remove('hidden');
                 this.elements.muteIcon.classList.add('hidden');
             }
-            this.elements.volumeSlider.value = data.volume * 100;
         });
     }
 
@@ -376,37 +374,28 @@ class AvatourApp {
             video: document.getElementById('avatar-video'),
             videoLoading: document.getElementById('video-loading'),
             videoControls: document.getElementById('video-controls'),
+            videoContainer: document.querySelector('.video-container'),
 
             // Controls
             playPause: document.getElementById('play-pause'),
             playIcon: document.getElementById('play-icon'),
             pauseIcon: document.getElementById('pause-icon'),
-            restart: document.getElementById('restart'),
+            playPauseOverlay: document.getElementById('play-pause-overlay'),
             mute: document.getElementById('mute'),
             volumeIcon: document.getElementById('volume-icon'),
             muteIcon: document.getElementById('mute-icon'),
-            volumeSlider: document.getElementById('volume-slider'),
-            subtitles: document.getElementById('subtitles'),
-            fullscreen: document.getElementById('fullscreen'),
-            fullscreenIcon: document.getElementById('fullscreen-icon'),
-            exitFullscreenIcon: document.getElementById('exit-fullscreen-icon'),
 
             // Progress
             progressBar: document.querySelector('.progress-bar'),
             progressFilled: document.getElementById('progress-filled'),
             progressBuffer: document.getElementById('progress-buffer'),
-            currentTime: document.getElementById('current-time'),
-            duration: document.getElementById('duration'),
 
             // POI Info
             poiTitle: document.getElementById('poi-title'),
             poiDescription: document.getElementById('poi-description-text'),
 
             // Navigation
-            prevPoi: document.getElementById('prev-poi'),
-            nextPoi: document.getElementById('next-poi'),
             showMap: document.getElementById('show-map'),
-            backToMap: document.getElementById('back-to-map'),
 
             // Language
             langToggle: document.getElementById('lang-toggle'),
@@ -437,37 +426,71 @@ class AvatourApp {
         this.elements.video.addEventListener('play', () => this.onPlay());
         this.elements.video.addEventListener('pause', () => this.onPause());
 
-        // Control events
-        this.elements.playPause.addEventListener('click', () => this.togglePlay());
-        this.elements.restart.addEventListener('click', () => this.restartVideo());
-        this.elements.mute.addEventListener('click', () => this.toggleMute());
-        this.elements.volumeSlider.addEventListener('input', (e) => this.setVolume(e.target.value));
-        this.elements.subtitles.addEventListener('click', () => this.toggleSubtitles());
-        this.elements.fullscreen.addEventListener('click', () => this.toggleFullscreen());
+        // Play/Pause - tap on overlay or button
+        if (this.elements.playPause) {
+            this.elements.playPause.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.togglePlay();
+            });
+        }
+
+        // Tap on video area to toggle play/pause
+        if (this.elements.playPauseOverlay) {
+            this.elements.playPauseOverlay.addEventListener('click', (e) => {
+                // Don't toggle if clicking on controls
+                if (e.target.closest('.side-controls') || e.target.closest('.video-controls')) {
+                    return;
+                }
+                this.togglePlay();
+            });
+        }
+
+        // Mute button
+        if (this.elements.mute) {
+            this.elements.mute.addEventListener('click', () => this.toggleMute());
+        }
 
         // Progress bar
-        this.elements.progressBar.addEventListener('click', (e) => this.seek(e));
+        if (this.elements.progressBar) {
+            this.elements.progressBar.addEventListener('click', (e) => this.seek(e));
+        }
 
-        // Navigation
-        this.elements.prevPoi.addEventListener('click', () => this.previousPOI());
-        this.elements.nextPoi.addEventListener('click', () => this.nextPOI());
-        this.elements.showMap.addEventListener('click', () => this.goToMap());
-        this.elements.backToMap.addEventListener('click', () => this.goToMap());
+        // Navigation - Map button
+        if (this.elements.showMap) {
+            this.elements.showMap.addEventListener('click', () => this.goToMap());
+        }
 
         // Language
-        this.elements.langToggle.addEventListener('click', () => this.toggleLanguageDropdown());
+        if (this.elements.langToggle) {
+            this.elements.langToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleLanguageDropdown();
+            });
+        }
         document.querySelectorAll('.lang-option').forEach(option => {
-            option.addEventListener('click', (e) => this.changeLanguage(e.currentTarget.dataset.lang));
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.changeLanguage(e.currentTarget.dataset.lang);
+            });
         });
 
         // Share
-        this.elements.shareBtn.addEventListener('click', () => this.openShareModal());
-        this.elements.closeShare.addEventListener('click', () => this.closeShareModal());
-        this.elements.shareModal.addEventListener('click', (e) => {
-            if (e.target === this.elements.shareModal) {
-                this.closeShareModal();
-            }
-        });
+        if (this.elements.shareBtn) {
+            this.elements.shareBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.openShareModal();
+            });
+        }
+        if (this.elements.closeShare) {
+            this.elements.closeShare.addEventListener('click', () => this.closeShareModal());
+        }
+        if (this.elements.shareModal) {
+            this.elements.shareModal.addEventListener('click', (e) => {
+                if (e.target === this.elements.shareModal) {
+                    this.closeShareModal();
+                }
+            });
+        }
         document.querySelectorAll('.share-option').forEach(option => {
             option.addEventListener('click', (e) => this.share(e.currentTarget.dataset.platform));
         });
@@ -498,13 +521,12 @@ class AvatourApp {
 
     onVideoLoaded() {
         this.elements.videoLoading.classList.add('hidden');
-        this.elements.duration.textContent = this.formatTime(this.elements.video.duration);
 
         // Set initial volume
         this.elements.video.volume = 0.8;
 
-        // Show controls initially
-        this.elements.videoControls.classList.add('show');
+        // Show paused state initially
+        this.elements.videoContainer.classList.add('video-paused');
     }
 
     onVideoEnded() {
@@ -517,12 +539,14 @@ class AvatourApp {
         this.isPlaying = true;
         this.elements.playIcon.classList.add('hidden');
         this.elements.pauseIcon.classList.remove('hidden');
+        this.elements.videoContainer.classList.remove('video-paused');
     }
 
     onPause() {
         this.isPlaying = false;
         this.elements.playIcon.classList.remove('hidden');
         this.elements.pauseIcon.classList.add('hidden');
+        this.elements.videoContainer.classList.add('video-paused');
     }
 
     togglePlay() {
@@ -556,17 +580,6 @@ class AvatourApp {
         }
     }
 
-    restartVideo() {
-        if (this.vimeoPlayer) {
-            this.vimeoPlayer.setCurrentTime(0).then(() => {
-                this.vimeoPlayer.play();
-            });
-        } else {
-            this.elements.video.currentTime = 0;
-            this.elements.video.play();
-        }
-    }
-
     toggleMute() {
         if (this.vimeoPlayer) {
             this.vimeoPlayer.getVolume().then(volume => {
@@ -590,35 +603,6 @@ class AvatourApp {
         }
     }
 
-    setVolume(value) {
-        const vol = value / 100;
-        if (this.vimeoPlayer) {
-            this.vimeoPlayer.setVolume(vol);
-        } else {
-            this.elements.video.volume = vol;
-
-            if (value == 0) {
-                this.elements.video.muted = true;
-                this.elements.volumeIcon.classList.add('hidden');
-                this.elements.muteIcon.classList.remove('hidden');
-            } else {
-                this.elements.video.muted = false;
-                this.elements.volumeIcon.classList.remove('hidden');
-                this.elements.muteIcon.classList.add('hidden');
-            }
-        }
-    }
-
-    toggleSubtitles() {
-        const tracks = this.elements.video.textTracks;
-        if (tracks.length > 0) {
-            const track = tracks[0];
-            track.mode = track.mode === 'showing' ? 'hidden' : 'showing';
-        }
-
-        // Visual feedback
-        this.elements.subtitles.style.color = this.elements.subtitles.style.color === 'rgb(245, 158, 11)' ? '' : 'rgb(245, 158, 11)';
-    }
 
     async toggleFullscreen() {
         const container = document.querySelector('.video-container');
@@ -642,20 +626,11 @@ class AvatourApp {
 
     onFullscreenChange() {
         this.isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
-
-        if (this.isFullscreen) {
-            this.elements.fullscreenIcon.classList.add('hidden');
-            this.elements.exitFullscreenIcon.classList.remove('hidden');
-        } else {
-            this.elements.fullscreenIcon.classList.remove('hidden');
-            this.elements.exitFullscreenIcon.classList.add('hidden');
-        }
     }
 
     updateProgress() {
         const percent = (this.elements.video.currentTime / this.elements.video.duration) * 100;
         this.elements.progressFilled.style.width = percent + '%';
-        this.elements.currentTime.textContent = this.formatTime(this.elements.video.currentTime);
     }
 
     updateBuffer() {
@@ -813,35 +788,37 @@ class AvatourApp {
                 e.preventDefault();
                 this.togglePlay();
                 break;
-            case 'f':
-                e.preventDefault();
-                this.toggleFullscreen();
-                break;
             case 'm':
                 e.preventDefault();
                 this.toggleMute();
                 break;
             case 'ArrowLeft':
                 e.preventDefault();
-                this.elements.video.currentTime = Math.max(0, this.elements.video.currentTime - 5);
+                if (this.vimeoPlayer) {
+                    this.vimeoPlayer.getCurrentTime().then(time => {
+                        this.vimeoPlayer.setCurrentTime(Math.max(0, time - 5));
+                    });
+                } else {
+                    this.elements.video.currentTime = Math.max(0, this.elements.video.currentTime - 5);
+                }
                 break;
             case 'ArrowRight':
                 e.preventDefault();
-                this.elements.video.currentTime = Math.min(this.elements.video.duration, this.elements.video.currentTime + 5);
-                break;
-            case 'ArrowUp':
-                e.preventDefault();
-                this.elements.video.volume = Math.min(1, this.elements.video.volume + 0.1);
-                this.elements.volumeSlider.value = this.elements.video.volume * 100;
-                break;
-            case 'ArrowDown':
-                e.preventDefault();
-                this.elements.video.volume = Math.max(0, this.elements.video.volume - 0.1);
-                this.elements.volumeSlider.value = this.elements.video.volume * 100;
+                if (this.vimeoPlayer) {
+                    Promise.all([this.vimeoPlayer.getCurrentTime(), this.vimeoPlayer.getDuration()]).then(([time, duration]) => {
+                        this.vimeoPlayer.setCurrentTime(Math.min(duration, time + 5));
+                    });
+                } else {
+                    this.elements.video.currentTime = Math.min(this.elements.video.duration, this.elements.video.currentTime + 5);
+                }
                 break;
             case '0':
                 e.preventDefault();
-                this.elements.video.currentTime = 0;
+                if (this.vimeoPlayer) {
+                    this.vimeoPlayer.setCurrentTime(0);
+                } else {
+                    this.elements.video.currentTime = 0;
+                }
                 break;
         }
     }
