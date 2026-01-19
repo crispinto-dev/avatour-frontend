@@ -29,6 +29,14 @@ class AvatourMap {
         this.isPanelCollapsed = false;
         this.clientSlug = 'PAL';
 
+        // Centri mappa per i diversi client
+        this.clientCenters = {
+            'PAL': { center: [40.0269, 15.2753], zoom: 13 },   // Palinuro
+            'ROM': { center: [41.9028, 12.4964], zoom: 12 },   // Roma
+            'BST': { center: [45.7648, 11.7277], zoom: 13 },   // Bassano del Grappa
+            'TSC': { center: [42.4173, 11.8688], zoom: 11 }    // Tuscia
+        };
+
         // Default center (Palinuro area)
         this.defaultCenter = [40.0269, 15.2753];
         this.defaultZoom = 13;
@@ -107,10 +115,15 @@ class AvatourMap {
     }
 
     initMap() {
+        // Usa il centro specifico per il client, o fallback al default
+        const clientConfig = this.clientCenters[this.clientSlug.toUpperCase()];
+        const mapCenter = clientConfig ? clientConfig.center : this.defaultCenter;
+        const mapZoom = clientConfig ? clientConfig.zoom : this.defaultZoom;
+
         // Create map
         this.map = L.map('map', {
-            center: this.defaultCenter,
-            zoom: this.defaultZoom,
+            center: mapCenter,
+            zoom: mapZoom,
             zoomControl: true,
             attributionControl: true
         });
@@ -174,7 +187,7 @@ class AvatourMap {
                         ${poi.description || ''}
                     </p>
                     <p style="margin: 0 0 12px 0; color: #666; font-size: 0.85rem;">
-                        🌍 ${poi.languages.map(l => l.toUpperCase()).join(', ')}
+                        🌍 ${this.getLanguages(poi).map(l => l.toUpperCase()).join(', ')}
                     </p>
                     <a href="index.html?poi=${poi.poi_code}"
                        style="display: inline-block; width: 100%; text-align: center;
@@ -213,14 +226,14 @@ class AvatourMap {
             card.dataset.poiId = poi.poi_code;
 
             // Usa thumbnail se disponibile, altrimenti placeholder
-            const thumbnailUrl = poi.thumbnail || 'assets/images/placeholder-poi.jpg';
+            const thumbnailUrl = poi.thumbnail || 'assets/images/placeholder-poi.svg';
 
             card.innerHTML = `
                 <img
                     src="${thumbnailUrl}"
                     alt="${poi.name}"
                     class="poi-card-image"
-                    onerror="this.src='assets/images/placeholder-poi.jpg'"
+                    onerror="this.src='assets/images/placeholder-poi.svg'"
                 >
                 <div class="poi-card-content">
                     <div class="poi-card-title">${poi.name}</div>
@@ -259,11 +272,11 @@ class AvatourMap {
         this.selectedPoi = poi;
 
         // Update modal content
-        const thumbnailUrl = poi.thumbnail || 'assets/images/placeholder-poi.jpg';
+        const thumbnailUrl = poi.thumbnail || 'assets/images/placeholder-poi.svg';
         document.getElementById('modal-thumbnail').src = thumbnailUrl;
         document.getElementById('modal-thumbnail').alt = poi.name;
         document.getElementById('modal-thumbnail').onerror = function() {
-            this.src = 'assets/images/placeholder-poi.jpg';
+            this.src = 'assets/images/placeholder-poi.svg';
         };
         document.getElementById('modal-title').textContent = poi.name;
         document.getElementById('modal-description').textContent = poi.description || '';
@@ -271,7 +284,7 @@ class AvatourMap {
             `${poi.lat.toFixed(4)}, ${poi.lng.toFixed(4)}`;
 
         // Update languages display
-        const languagesText = poi.languages.map(l => {
+        const languagesText = this.getLanguages(poi).map(l => {
             const langNames = { it: 'Italiano', en: 'English', de: 'Deutsch' };
             return langNames[l] || l.toUpperCase();
         }).join(', ');
@@ -418,6 +431,21 @@ class AvatourMap {
         const url = new URL(window.location);
         url.searchParams.set('lang', lang);
         window.history.pushState({}, '', url);
+    }
+
+    /**
+     * Estrae le lingue disponibili per un POI
+     * Prima cerca nel campo languages, altrimenti estrae dalle chiavi di videos
+     */
+    getLanguages(poi) {
+        if (poi.languages && Array.isArray(poi.languages) && poi.languages.length > 0) {
+            return poi.languages;
+        }
+        // Fallback: estrai le lingue dalle chiavi dell'oggetto videos
+        if (poi.videos && typeof poi.videos === 'object') {
+            return Object.keys(poi.videos);
+        }
+        return ['it']; // Default
     }
 
     updateLanguageUI() {

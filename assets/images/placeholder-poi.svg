@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#e2e8f0"/>
+  <g transform="translate(150, 100)">
+    <path d="M50 0C22.4 0 0 22.4 0 50c0 37.5 50 75 50 75s50-37.5 50-75c0-27.6-22.4-50-50-50zm0 68c-9.9 0-18-8.1-18-18s8.1-18 18-18 18 8.1 18 18-8.1 18-18 18z" fill="#94a3b8"/>
+  </g>
+  <text x="200" y="260" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" fill="#64748b">POI</text>
+</svg>
