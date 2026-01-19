@@ -485,14 +485,15 @@ input {
     height: 40px;
 }
 
-.play-pause-overlay:hover .play-pause-btn,
-.play-pause-btn.show {
+/* Show play button only when video is paused */
+.video-container.video-paused .play-pause-btn {
     opacity: 1;
 }
 
-/* Show play button when video is paused */
-.video-container.video-paused .play-pause-btn {
-    opacity: 1;
+/* Hide when playing */
+.video-container:not(.video-paused) .play-pause-btn {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* ========================================
