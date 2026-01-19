@@ -51,9 +51,15 @@ class AvatourApp {
         // Setup event listeners
         this.setupEventListeners();
 
-        // Get POI from URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const poiCode = urlParams.get('poi') || 'PAL-001';
+        // Get POI from URL - supporta sia /poi/CODE che ?poi=CODE
+        let poiCode = 'PAL-001';
+        const pathMatch = window.location.pathname.match(/\/poi\/([A-Z]{3}-\d{3})/i);
+        if (pathMatch) {
+            poiCode = pathMatch[1].toUpperCase();
+        } else {
+            const urlParams = new URLSearchParams(window.location.search);
+            poiCode = urlParams.get('poi') || 'PAL-001';
+        }
 
         // Load POI data from API
         await this.loadPOIData(poiCode);
@@ -160,12 +166,37 @@ class AvatourApp {
     }
 
     loadVimeoVideo(vimeoUrl) {
-        // Per video Vimeo, potremmo usare iframe player
-        // Per ora carichiamo un placeholder
-        console.log('Vimeo video URL:', vimeoUrl);
+        console.log('Loading Vimeo video:', vimeoUrl);
+
+        // Nascondi il video element HTML5
         const videoElement = this.elements.video;
-        videoElement.src = 'assets/videos/placeholder.mp4';
-        videoElement.load();
+        videoElement.style.display = 'none';
+
+        // Rimuovi iframe esistente se presente
+        const existingIframe = document.getElementById('vimeo-iframe');
+        if (existingIframe) {
+            existingIframe.remove();
+        }
+
+        // Crea iframe per Vimeo
+        const iframe = document.createElement('iframe');
+        iframe.id = 'vimeo-iframe';
+        iframe.src = `${vimeoUrl}?autoplay=0&title=0&byline=0&portrait=0&dnt=1`;
+        iframe.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;';
+        iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+        iframe.allowFullscreen = true;
+
+        // Inserisci iframe nel container video
+        const videoContainer = document.querySelector('.video-container');
+        videoContainer.appendChild(iframe);
+
+        // Nascondi loading
+        this.hideLoading();
+
+        // Nascondi controlli custom (Vimeo ha i suoi)
+        if (this.elements.videoControls) {
+            this.elements.videoControls.style.display = 'none';
+        }
     }
 
     initLanguageSelector(poi) {
