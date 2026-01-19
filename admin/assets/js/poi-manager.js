@@ -6,14 +6,87 @@
 // fetchAuthAPI è definito in admin.js
 
 let allPOIs = [];
+let allClients = [];
 let currentMap = null;
 let currentMarker = null;
+
+/**
+ * Carica la lista dei clienti dall'API
+ */
+async function loadClientsForDropdown() {
+    try {
+        allClients = await fetchAuthAPI('/admin/clients');
+        if (!Array.isArray(allClients)) {
+            allClients = [];
+        }
+        return allClients;
+    } catch (error) {
+        console.error('Errore caricamento clienti:', error);
+        allClients = [];
+        return [];
+    }
+}
+
+/**
+ * Popola un dropdown con i clienti
+ */
+function populateClientDropdown(selectElement, includeEmpty = true) {
+    if (!selectElement) return;
+
+    // Salva valore corrente se presente
+    const currentValue = selectElement.value;
+
+    // Svuota e ripopola
+    selectElement.innerHTML = '';
+
+    if (includeEmpty) {
+        const emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.textContent = 'Seleziona cliente';
+        selectElement.appendChild(emptyOption);
+    }
+
+    allClients.forEach(client => {
+        const option = document.createElement('option');
+        option.value = client.slug;
+        option.textContent = `${client.slug} - ${client.name}`;
+        selectElement.appendChild(option);
+    });
+
+    // Ripristina valore se presente
+    if (currentValue) {
+        selectElement.value = currentValue;
+    }
+}
+
+/**
+ * Popola il dropdown filtro clienti nella lista POI
+ */
+async function populateFilterClientDropdown() {
+    const filterSelect = document.getElementById('filterClient');
+    if (!filterSelect) return;
+
+    await loadClientsForDropdown();
+
+    // Mantieni l'opzione "Tutti i clienti"
+    filterSelect.innerHTML = '<option value="">Tutti i clienti</option>';
+
+    allClients.forEach(client => {
+        const option = document.createElement('option');
+        option.value = client.slug;
+        option.textContent = `${client.slug} - ${client.name}`;
+        filterSelect.appendChild(option);
+    });
+}
 
 /**
  * Carica la lista di tutti i POI (usa endpoint autenticato)
  */
 async function loadPOIsList() {
     try {
+        // Prima carica i clienti per il dropdown filtro
+        await populateFilterClientDropdown();
+
         // Usa fetchAuthAPI definito in admin.js per chiamare endpoint autenticato
         allPOIs = await fetchAuthAPI('/admin/pois');
 
@@ -122,7 +195,12 @@ function filterPOIs() {
 /**
  * Inizializza il form di aggiunta POI
  */
-function initPOIForm() {
+async function initPOIForm() {
+    // Carica clienti per dropdown
+    await loadClientsForDropdown();
+    const clientSelect = document.getElementById('clientSlug');
+    populateClientDropdown(clientSelect, true);
+
     // Genera codice POI automaticamente
     setupPOICodeGenerator();
 
@@ -345,6 +423,11 @@ async function initPOIEditForm() {
     }
 
     try {
+        // Carica clienti per dropdown
+        await loadClientsForDropdown();
+        const clientSelect = document.getElementById('clientSlug');
+        populateClientDropdown(clientSelect, false);
+
         // Carica POI
         const poi = await fetchAPI(`/poi/${poiCode}`);
 
