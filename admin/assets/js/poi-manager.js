@@ -265,8 +265,8 @@ async function handlePOISubmit(e) {
     const formData = collectPOIFormData();
 
     try {
-        // Chiama API per creare POI
-        await fetchAPI('/admin/poi', {
+        // Chiama API per creare POI (usa fetchAuthAPI per autenticazione)
+        await fetchAuthAPI('/admin/poi', {
             method: 'POST',
             body: JSON.stringify(formData)
         });
@@ -412,7 +412,7 @@ async function handlePOIUpdate(e, poiCode) {
     delete formData.poi_code; // Non si può modificare il codice
 
     try {
-        await fetchAPI(`/admin/poi/${poiCode}`, {
+        await fetchAuthAPI(`/admin/poi/${poiCode}`, {
             method: 'PUT',
             body: JSON.stringify(formData)
         });
@@ -456,7 +456,7 @@ function closeDeleteModal() {
  */
 async function deletePOI(poiCode) {
     try {
-        await fetchAPI(`/admin/poi/${poiCode}`, {
+        await fetchAuthAPI(`/admin/poi/${poiCode}`, {
             method: 'DELETE'
         });
 
