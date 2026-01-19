@@ -98,8 +98,36 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="poiAddress">Indirizzo</label>
+                        <input type="text" id="poiAddress" placeholder="es: Via Roma 1, Palinuro (SA)">
+                        <small>Indirizzo o località del POI</small>
+                    </div>
+
                     <div id="mapPicker" style="height: 300px; margin-top: 15px; border-radius: 8px; overflow: hidden;"></div>
                     <small>Clicca sulla mappa per aggiornare la posizione</small>
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="form-section">
+                    <h3>📱 QR Code</h3>
+                    <p style="color: #6b7280; margin-bottom: 16px;">QR Code univoco per questo POI. Scansionando il codice si accede direttamente al video.</p>
+
+                    <div class="qr-section-container">
+                        <div class="qr-preview" id="qrPreviewContainer">
+                            <div class="qr-loading">Caricamento QR Code...</div>
+                        </div>
+                        <div class="qr-info">
+                            <div class="qr-url-display">
+                                <label>URL del POI:</label>
+                                <code id="poiUrlDisplay">-</code>
+                            </div>
+                            <div class="qr-buttons">
+                                <button type="button" onclick="downloadQRFromEdit()" class="btn-primary">⬇️ Scarica PNG</button>
+                                <button type="button" onclick="copyPoiUrl()" class="btn-secondary">📋 Copia URL</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-section">

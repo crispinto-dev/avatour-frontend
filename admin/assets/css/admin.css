@@ -905,3 +905,80 @@ body {
     color: var(--white);
     border-color: var(--primary);
 }
+
+/* QR Code Section in Edit Page */
+.qr-section-container {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.qr-preview {
+    flex-shrink: 0;
+    width: 200px;
+    height: 200px;
+    background: var(--white);
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.qr-preview img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.qr-loading {
+    color: var(--gray-500);
+    font-size: 13px;
+    text-align: center;
+}
+
+.qr-info {
+    flex: 1;
+}
+
+.qr-url-display {
+    margin-bottom: 16px;
+}
+
+.qr-url-display label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--gray-700);
+}
+
+.qr-url-display code {
+    display: block;
+    background: var(--gray-100);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--primary);
+    word-break: break-all;
+}
+
+.qr-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+@media (max-width: 768px) {
+    .qr-section-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .qr-info {
+        width: 100%;
+        text-align: center;
+    }
+
+    .qr-buttons {
+        justify-content: center;
+    }
+}

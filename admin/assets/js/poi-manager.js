@@ -307,6 +307,7 @@ function collectPOIFormData() {
         client_slug: clientSlug,
         name: document.getElementById('poiName').value,
         description: document.getElementById('poiDescription')?.value || '',
+        address: document.getElementById('poiAddress')?.value || '',
         lat: parseFloat(document.getElementById('lat').value),
         lng: parseFloat(document.getElementById('lng').value),
         languages,
@@ -375,11 +376,19 @@ function populatePOIForm(poi) {
     document.getElementById('lat').value = poi.lat;
     document.getElementById('lng').value = poi.lng;
 
+    // Indirizzo
+    if (document.getElementById('poiAddress')) {
+        document.getElementById('poiAddress').value = poi.address || '';
+    }
+
     // Lingue
     poi.languages.forEach(lang => {
         const checkbox = document.querySelector(`input[name="languages"][value="${lang}"]`);
         if (checkbox) checkbox.checked = true;
     });
+
+    // Carica QR Code
+    loadQRCodePreview(poi.poi_code);
 
     // Update marker position
     setTimeout(() => {
@@ -529,4 +538,78 @@ function downloadQR(poiCode) {
     // Apre direttamente l'URL per il download del QR Code PNG
     const downloadUrl = `${API_BASE}/qrcode/${poiCode}/image?download=true`;
     window.open(downloadUrl, '_blank');
+}
+
+// ========================================
+// QR CODE FUNCTIONS FOR EDIT PAGE
+// ========================================
+
+// Variabile globale per memorizzare il POI code corrente nella pagina edit
+let currentEditPOICode = null;
+let currentEditPOIUrl = null;
+
+/**
+ * Carica il QR Code preview nella pagina di modifica
+ */
+async function loadQRCodePreview(poiCode) {
+    currentEditPOICode = poiCode;
+
+    const container = document.getElementById('qrPreviewContainer');
+    const urlDisplay = document.getElementById('poiUrlDisplay');
+
+    if (!container) return;
+
+    try {
+        // Chiama API per ottenere QR Code
+        const response = await fetchAPI(`/qrcode/${poiCode}`);
+
+        if (response.data && response.data.qr_code_data_url) {
+            container.innerHTML = `<img src="${response.data.qr_code_data_url}" alt="QR Code ${poiCode}">`;
+            currentEditPOIUrl = response.data.url;
+            if (urlDisplay) {
+                urlDisplay.textContent = response.data.url;
+            }
+        } else {
+            throw new Error('Risposta API non valida');
+        }
+    } catch (error) {
+        console.error('Errore caricamento QR Code:', error);
+        container.innerHTML = '<div class="qr-loading">Errore caricamento QR</div>';
+        if (urlDisplay) {
+            urlDisplay.textContent = 'Errore';
+        }
+    }
+}
+
+/**
+ * Scarica QR Code dalla pagina edit
+ */
+function downloadQRFromEdit() {
+    if (currentEditPOICode) {
+        downloadQR(currentEditPOICode);
+    }
+}
+
+/**
+ * Copia l'URL del POI negli appunti
+ */
+async function copyPoiUrl() {
+    if (!currentEditPOIUrl) {
+        alert('URL non disponibile');
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(currentEditPOIUrl);
+        alert('URL copiato negli appunti!');
+    } catch (error) {
+        // Fallback per browser che non supportano clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = currentEditPOIUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('URL copiato negli appunti!');
+    }
 }
