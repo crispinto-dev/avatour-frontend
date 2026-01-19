@@ -675,9 +675,9 @@ class AvatourApp {
 
     goToMap() {
         if (this.currentPoi) {
-            window.location.href = `map.html?client=${this.currentPoi.client_slug}&lang=${this.currentLanguage}`;
+            window.location.href = `/map.html?client=${this.currentPoi.client_slug}&lang=${this.currentLanguage}`;
         } else {
-            window.location.href = 'map.html';
+            window.location.href = '/map.html';
         }
     }
 
