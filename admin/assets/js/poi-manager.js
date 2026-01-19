@@ -509,10 +509,11 @@ async function showQRModal(poiCode, poiName) {
         // Chiama API per ottenere QR Code
         const response = await fetchAPI(`/qrcode/${poiCode}`);
 
-        if (response.data && response.data.qr_code_data_url) {
-            qrImage.src = response.data.qr_code_data_url;
+        // fetchAPI restituisce già result.data, quindi accediamo direttamente alle proprietà
+        if (response && response.qr_code_data_url) {
+            qrImage.src = response.qr_code_data_url;
             qrImage.alt = `QR Code per ${poiCode}`;
-            qrUrl.textContent = response.data.url;
+            qrUrl.textContent = response.url;
         } else {
             throw new Error('Risposta API non valida');
         }
@@ -563,11 +564,12 @@ async function loadQRCodePreview(poiCode) {
         // Chiama API per ottenere QR Code
         const response = await fetchAPI(`/qrcode/${poiCode}`);
 
-        if (response.data && response.data.qr_code_data_url) {
-            container.innerHTML = `<img src="${response.data.qr_code_data_url}" alt="QR Code ${poiCode}">`;
-            currentEditPOIUrl = response.data.url;
+        // fetchAPI restituisce già result.data, quindi accediamo direttamente alle proprietà
+        if (response && response.qr_code_data_url) {
+            container.innerHTML = `<img src="${response.qr_code_data_url}" alt="QR Code ${poiCode}">`;
+            currentEditPOIUrl = response.url;
             if (urlDisplay) {
-                urlDisplay.textContent = response.data.url;
+                urlDisplay.textContent = response.url;
             }
         } else {
             throw new Error('Risposta API non valida');
