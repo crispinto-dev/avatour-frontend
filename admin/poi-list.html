@@ -61,12 +61,13 @@
                                 <th>Cliente</th>
                                 <th>Coordinate</th>
                                 <th>Lingue</th>
+                                <th>QR</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody id="poisTableBody">
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 40px;">
+                                <td colspan="7" style="text-align: center; padding: 40px;">
                                     <div class="loading-spinner"></div>
                                     Caricamento POI...
                                 </td>
@@ -88,6 +89,28 @@
             <div class="modal-actions">
                 <button onclick="closeDeleteModal()" class="btn-secondary">Annulla</button>
                 <button id="confirmDelete" class="btn-danger">Elimina</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div id="qrModal" class="modal" style="display: none;">
+        <div class="modal-backdrop" onclick="closeQRModal()"></div>
+        <div class="modal-content qr-modal-content">
+            <h3>QR Code POI</h3>
+            <p class="qr-poi-code"><span id="qrPOICode"></span> - <span id="qrPOIName"></span></p>
+
+            <div class="qr-code-container">
+                <img id="qrCodeImage" src="" alt="QR Code">
+            </div>
+
+            <div class="qr-url" id="qrUrl"></div>
+
+            <div class="qr-actions">
+                <button onclick="downloadQR(document.getElementById('qrPOICode').textContent)" class="btn-primary">
+                    ⬇️ Scarica PNG
+                </button>
+                <button onclick="closeQRModal()" class="btn-secondary">Chiudi</button>
             </div>
         </div>
     </div>

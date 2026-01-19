@@ -42,7 +42,7 @@ function displayPOIsList(pois) {
     const tbody = document.getElementById('poisTableBody');
 
     if (!pois || pois.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">Nessun POI trovato</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">Nessun POI trovato</td></tr>';
         return;
     }
 
@@ -57,6 +57,9 @@ function displayPOIsList(pois) {
                 <td>${clientSlug}</td>
                 <td>${poi.lat.toFixed(4)}, ${poi.lng.toFixed(4)}</td>
                 <td>${(poi.languages || []).map(l => l.toUpperCase()).join(', ')}</td>
+                <td>
+                    <button onclick="showQRModal('${poi.poi_code}', '${poi.name.replace(/'/g, "\\'")}')" class="btn-qr" title="QR Code">📱</button>
+                </td>
                 <td>
                     <a href="poi-edit.html?code=${poi.poi_code}" class="btn-sm">✏️ Modifica</a>
                     <button onclick="openDeleteModal('${poi.poi_code}', '${poi.name.replace(/'/g, "\\'")}')" class="btn-sm btn-danger" style="margin-left: 8px;">🗑️</button>
@@ -468,4 +471,62 @@ async function deletePOI(poiCode) {
         console.error('Errore eliminazione POI:', error);
         alert('Errore durante l\'eliminazione del POI');
     }
+}
+
+// ========================================
+// QR CODE FUNCTIONS
+// ========================================
+
+/**
+ * Mostra il modal con il QR Code del POI
+ */
+async function showQRModal(poiCode, poiName) {
+    const modal = document.getElementById('qrModal');
+    const qrImage = document.getElementById('qrCodeImage');
+    const qrPoiCode = document.getElementById('qrPOICode');
+    const qrPoiName = document.getElementById('qrPOIName');
+    const qrUrl = document.getElementById('qrUrl');
+
+    // Mostra loading
+    qrPoiCode.textContent = poiCode;
+    qrPoiName.textContent = poiName;
+    qrImage.src = '';
+    qrImage.alt = 'Caricamento QR Code...';
+    qrUrl.textContent = 'Generazione URL...';
+
+    modal.style.display = 'flex';
+
+    try {
+        // Chiama API per ottenere QR Code
+        const response = await fetchAPI(`/qrcode/${poiCode}`);
+
+        if (response.data && response.data.qr_code_data_url) {
+            qrImage.src = response.data.qr_code_data_url;
+            qrImage.alt = `QR Code per ${poiCode}`;
+            qrUrl.textContent = response.data.url;
+        } else {
+            throw new Error('Risposta API non valida');
+        }
+    } catch (error) {
+        console.error('Errore generazione QR Code:', error);
+        qrImage.alt = 'Errore nel caricamento del QR Code';
+        qrUrl.textContent = 'Errore nella generazione';
+    }
+}
+
+/**
+ * Chiude il modal QR Code
+ */
+function closeQRModal() {
+    const modal = document.getElementById('qrModal');
+    modal.style.display = 'none';
+}
+
+/**
+ * Scarica il QR Code come immagine PNG
+ */
+function downloadQR(poiCode) {
+    // Apre direttamente l'URL per il download del QR Code PNG
+    const downloadUrl = `${API_BASE}/qrcode/${poiCode}/image?download=true`;
+    window.open(downloadUrl, '_blank');
 }
