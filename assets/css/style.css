@@ -521,6 +521,7 @@ input {
     transform: translate(-50%, -50%);
     text-align: center;
     color: var(--text-light);
+    z-index: 5;
 }
 
 .video-loading .spinner {
@@ -551,6 +552,12 @@ input {
     padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
     opacity: 0;
     transition: opacity var(--transition-normal);
+    z-index: 10;
+}
+
+/* Vimeo iframe deve stare sotto i controlli */
+#vimeo-iframe {
+    z-index: 1;
 }
 
 .video-container:hover .video-controls,

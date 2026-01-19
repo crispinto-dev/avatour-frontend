@@ -164,9 +164,18 @@ class AvatourApp {
 
         let videoUrl;
         if (video.host === 'vimeo') {
-            videoUrl = `https://player.vimeo.com/video/${video.video_id}`;
+            // Supporta video_id con o senza hash (es: "123456789" o "123456789?h=abc123")
+            let vimeoId = video.video_id;
+            let vimeoUrl = `https://player.vimeo.com/video/${vimeoId}`;
+
+            // Se il video_id contiene già parametri (es: hash), gestiscili correttamente
+            if (vimeoId.includes('?')) {
+                // Il video_id contiene già il hash, usa & per aggiungere altri parametri
+                console.log('Vimeo video with hash detected:', vimeoId);
+            }
+
             // Per Vimeo usiamo iframe invece di video element
-            this.loadVimeoVideo(videoUrl);
+            this.loadVimeoVideo(vimeoUrl);
             return;
         } else if (video.host === 'cloudflare') {
             videoUrl = `https://customer-${video.video_id}.cloudflarestream.com/manifest/video.m3u8`;
@@ -203,7 +212,13 @@ class AvatourApp {
         // Crea iframe per Vimeo (senza controlli nativi)
         const iframe = document.createElement('iframe');
         iframe.id = 'vimeo-iframe';
-        iframe.src = `${vimeoUrl}?autoplay=0&title=0&byline=0&portrait=0&controls=0&dnt=1&transparent=1`;
+
+        // Gestisci URL con o senza parametri esistenti (es: hash)
+        const separator = vimeoUrl.includes('?') ? '&' : '?';
+        const iframeSrc = `${vimeoUrl}${separator}autoplay=0&title=0&byline=0&portrait=0&controls=0&dnt=1&transparent=1`;
+        console.log('Final iframe src:', iframeSrc);
+
+        iframe.src = iframeSrc;
         iframe.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;';
         iframe.allow = 'autoplay; fullscreen; picture-in-picture';
         iframe.allowFullscreen = true;
@@ -225,11 +240,23 @@ class AvatourApp {
 
         // Nascondi loading quando pronto
         this.vimeoPlayer.ready().then(() => {
+            console.log('Vimeo player ready');
             this.hideLoading();
             // Ottieni durata
             this.vimeoPlayer.getDuration().then(duration => {
+                console.log('Video duration:', duration);
                 this.elements.duration.textContent = this.formatTime(duration);
             });
+        }).catch(err => {
+            console.error('Vimeo player ready error:', err);
+            this.hideLoading();
+            this.showError('Errore nel caricamento del video Vimeo: ' + err.message);
+        });
+
+        // Gestisci errori del player
+        this.vimeoPlayer.on('error', (err) => {
+            console.error('Vimeo player error:', err);
+            this.showError('Errore Vimeo: ' + (err.message || 'Errore sconosciuto'));
         });
     }
 
@@ -484,12 +511,23 @@ class AvatourApp {
     togglePlay() {
         if (this.vimeoPlayer) {
             // Vimeo Player
+            console.log('togglePlay: Vimeo player detected');
             this.vimeoPlayer.getPaused().then(paused => {
+                console.log('togglePlay: paused =', paused);
                 if (paused) {
-                    this.vimeoPlayer.play();
+                    console.log('togglePlay: calling play()');
+                    this.vimeoPlayer.play().then(() => {
+                        console.log('togglePlay: play() success');
+                    }).catch(err => {
+                        console.error('togglePlay: play() error:', err);
+                        this.showError('Impossibile avviare il video: ' + err.message);
+                    });
                 } else {
+                    console.log('togglePlay: calling pause()');
                     this.vimeoPlayer.pause();
                 }
+            }).catch(err => {
+                console.error('togglePlay: getPaused() error:', err);
             });
         } else {
             // HTML5 Video
