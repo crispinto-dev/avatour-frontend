@@ -49,8 +49,8 @@ class AvatourMap {
         // Show loading
         this.showLoading();
 
-        // Salva il referrer per il pulsante indietro
-        this.previousPage = document.referrer || null;
+        // Recupera l'URL di ritorno da sessionStorage (salvato da app.js)
+        this.previousPage = sessionStorage.getItem('avatour_return_url') || null;
 
         // Get params from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -346,9 +346,8 @@ class AvatourMap {
         const backBtn = document.getElementById('back-btn');
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                // Torna alla pagina precedente se esiste e proviene dal sito
-                if (this.previousPage && this.previousPage.includes(window.location.host)) {
-                    // Usa il referrer salvato per tornare alla pagina esatta
+                // Torna alla pagina POI salvata in sessionStorage
+                if (this.previousPage) {
                     window.location.href = this.previousPage;
                 } else {
                     // Fallback: vai alla home

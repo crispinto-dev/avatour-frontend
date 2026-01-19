@@ -674,6 +674,9 @@ class AvatourApp {
     }
 
     goToMap() {
+        // Salva l'URL corrente per poter tornare indietro dalla mappa
+        sessionStorage.setItem('avatour_return_url', window.location.href);
+
         if (this.currentPoi) {
             window.location.href = `/map.html?client=${this.currentPoi.client_slug}&lang=${this.currentLanguage}`;
         } else {
