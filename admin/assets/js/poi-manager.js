@@ -95,7 +95,9 @@ function filterPOIs() {
     const filtered = allPOIs.filter(poi => {
         const matchesSearch = poi.name.toLowerCase().includes(searchTerm) ||
                             poi.poi_code.toLowerCase().includes(searchTerm);
-        const matchesClient = !clientFilter || poi.client_slug === clientFilter;
+        // Il backend ritorna client: {slug, name} invece di client_slug
+        const clientSlug = poi.client?.slug || poi.client_slug || '';
+        const matchesClient = !clientFilter || clientSlug === clientFilter;
 
         return matchesSearch && matchesClient;
     });
