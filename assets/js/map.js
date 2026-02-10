@@ -64,6 +64,12 @@ class AvatourMap {
 
         if (client) {
             this.clientSlug = client;
+        } else {
+            // Prova a leggere lo slug dal path URL (es. /greccio)
+            const pathSlug = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');
+            if (pathSlug && !pathSlug.includes('/') && !pathSlug.includes('.')) {
+                this.clientSlug = pathSlug.toUpperCase();
+            }
         }
 
         // Load POI data from API
@@ -192,7 +198,7 @@ class AvatourMap {
                     <p style="margin: 0 0 12px 0; color: #666; font-size: 0.85rem;">
                         🌍 ${this.getLanguages(poi).map(l => l.toUpperCase()).join(', ')}
                     </p>
-                    <a href="index.html?poi=${poi.poi_code}"
+                    <a href="/poi/${poi.poi_code}"
                        style="display: inline-block; width: 100%; text-align: center;
                               padding: 8px 16px; background: #f59e0b; color: white;
                               text-decoration: none; border-radius: 6px; font-weight: 600;">
@@ -314,7 +320,7 @@ class AvatourMap {
 
     startTour() {
         if (this.selectedPoi) {
-            window.location.href = `index.html?poi=${this.selectedPoi.poi_code}&lang=${this.currentLanguage}`;
+            window.location.href = `/poi/${this.selectedPoi.poi_code}?lang=${this.currentLanguage}`;
         }
     }
 
