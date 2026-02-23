@@ -9,8 +9,7 @@ const USER_KEY = 'avatour_user';
 // API_BASE è definito in admin.js
 // Per il login standalone, usa un valore di default se non definito
 const getApiBase = () => {
-    //return (typeof API_BASE !== 'undefined') ? API_BASE : 'http://localhost:3000/api';
-    return (typeof API_BASE !== 'undefined') ? API_BASE : 'http://72.60.80.53:3000/api';
+    return (typeof API_BASE !== 'undefined') ? API_BASE : window.location.origin + '/api';
 };
 
 /**
