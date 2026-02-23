@@ -54,7 +54,7 @@ class AvatourApp {
 
         // Get POI from URL - supporta sia /poi/CODE che ?poi=CODE
         let poiCode = 'PAL-001';
-        const pathMatch = window.location.pathname.match(/\/poi\/([A-Z]{3}-\d{3})/i);
+        const pathMatch = window.location.pathname.match(/\/poi\/([A-Z0-9]+-\d+)/i);
         if (pathMatch) {
             poiCode = pathMatch[1].toUpperCase();
         } else {
