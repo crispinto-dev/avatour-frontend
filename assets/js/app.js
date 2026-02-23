@@ -3,9 +3,8 @@
 // Versione 2.0 - Collegato alle API Backend
 // ========================================
 
-// Configurazione API Backend
-//const API_BASE_URL = 'http://localhost:3000/api';
-const API_BASE_URL = 'http://72.60.80.53:3000/api';
+// Configurazione API Backend - usa sempre lo stesso origin della pagina
+const API_BASE_URL = window.location.origin + '/api';
 // Helper per chiamate API
 async function fetchAPI(endpoint) {
     try {

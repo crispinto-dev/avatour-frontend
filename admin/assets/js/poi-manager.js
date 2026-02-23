@@ -319,6 +319,19 @@ function setupLanguageSelection() {
             return;
         }
 
+        // Salva i valori esistenti prima di rigenerare l'HTML
+        const savedValues = {};
+        selectedLanguages.forEach(lang => {
+            const hostEl = document.getElementById(`video_host_${lang}`);
+            const idEl = document.getElementById(`video_id_${lang}`);
+            if (hostEl || idEl) {
+                savedValues[lang] = {
+                    host: hostEl ? hostEl.value : 'vimeo',
+                    video_id: idEl ? idEl.value : ''
+                };
+            }
+        });
+
         videoInputsContainer.innerHTML = selectedLanguages.map(lang => `
             <div class="video-input-group">
                 <div class="video-input-header">
@@ -344,6 +357,14 @@ function setupLanguageSelection() {
                 </div>
             </div>
         `).join('');
+
+        // Ripristina i valori salvati
+        Object.entries(savedValues).forEach(([lang, vals]) => {
+            const hostEl = document.getElementById(`video_host_${lang}`);
+            const idEl = document.getElementById(`video_id_${lang}`);
+            if (hostEl && vals.host) hostEl.value = vals.host;
+            if (idEl && vals.video_id) idEl.value = vals.video_id;
+        });
     }
 
     function updateTranslationsInputs() {
@@ -358,6 +379,13 @@ function setupLanguageSelection() {
             return;
         }
 
+        // Salva i valori esistenti prima di rigenerare l'HTML
+        const savedValues = {};
+        selectedLanguages.forEach(lang => {
+            const el = document.getElementById(`trans_description_${lang}`);
+            if (el) savedValues[lang] = el.value;
+        });
+
         translationsContainer.innerHTML = selectedLanguages.map(lang => `
             <div class="translation-input-group">
                 <div class="translation-input-header">
@@ -371,6 +399,12 @@ function setupLanguageSelection() {
                 </div>
             </div>
         `).join('');
+
+        // Ripristina i valori salvati
+        Object.entries(savedValues).forEach(([lang, val]) => {
+            const el = document.getElementById(`trans_description_${lang}`);
+            if (el && val) el.value = val;
+        });
     }
 
     languageCheckboxes.forEach(cb => {
