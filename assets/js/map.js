@@ -107,7 +107,8 @@ class AvatourMap {
             const response = await fetchAPI(`/clients/${this.clientSlug}/pois`);
 
             // L'API ritorna {client_slug, pois, total}, estraiamo l'array pois
-            this.pois = response.pois || [];
+            // Ordina per poi_code in modo che i numeri sui marker siano coerenti
+            this.pois = (response.pois || []).sort((a, b) => a.poi_code.localeCompare(b.poi_code));
 
             console.log('POI caricati:', this.pois);
 
