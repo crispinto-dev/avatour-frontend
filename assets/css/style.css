@@ -1003,8 +1003,8 @@ input {
 }
 
 .client-logo-header {
-    height: 32px;
-    max-width: 90px;
+    height: 42px;
+    max-width: 117px;
     object-fit: contain;
     margin-right: 8px;
 }
