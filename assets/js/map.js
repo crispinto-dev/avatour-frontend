@@ -116,6 +116,8 @@ class AvatourMap {
             }
             if (client && client.client_name) {
                 document.title = `${client.client_name} - AVATOUR`;
+                const titleEl = document.getElementById('map-title-text');
+                if (titleEl) titleEl.textContent = `${client.client_name} Avatour`;
             }
         } catch (err) {
             // Nessun logo disponibile, mantieni l'icona di default
@@ -208,8 +210,12 @@ class AvatourMap {
                 .addTo(this.map);
 
             // Add popup
+            const thumbUrl = poi.thumbnail || 'assets/images/placeholder-poi.svg';
             const popupContent = `
                 <div style="min-width: 200px;">
+                    <img src="${thumbUrl}"
+                         onerror="this.src='assets/images/placeholder-poi.svg'"
+                         style="width:100%; height:120px; object-fit:cover; border-radius:6px; margin-bottom:8px; display:block;">
                     <h3 style="margin: 0 0 8px 0; color: #1e40af; font-size: 1.1rem;">
                         ${poi.name}
                     </h3>
@@ -223,7 +229,7 @@ class AvatourMap {
                        style="display: inline-block; width: 100%; text-align: center;
                               padding: 8px 16px; background: #f59e0b; color: white;
                               text-decoration: none; border-radius: 6px; font-weight: 600;">
-                        🎧 Ascolta l'Avatar
+                        ▶ Vedi e Ascolta Avatour
                     </a>
                 </div>
             `;
