@@ -71,7 +71,8 @@ class AvatourMap {
             }
         }
 
-        // Load POI data from API
+        // Load client info (logo, name) and POI data
+        await this.loadClientInfo();
         await this.loadPOIs();
 
         // Initialize map
@@ -98,6 +99,26 @@ class AvatourMap {
         const loading = document.getElementById('map-loading');
         if (loading) {
             loading.classList.add('hidden');
+        }
+    }
+
+    async loadClientInfo() {
+        try {
+            const client = await fetchAPI(`/clients/${this.clientSlug}`);
+            if (client && client.logo_url) {
+                const logoEl = document.getElementById('client-logo');
+                const iconEl = document.getElementById('map-default-icon');
+                if (logoEl) {
+                    logoEl.src = client.logo_url;
+                    logoEl.style.display = 'block';
+                    if (iconEl) iconEl.style.display = 'none';
+                }
+            }
+            if (client && client.name) {
+                document.title = `${client.name} - AVATOUR`;
+            }
+        } catch (err) {
+            // Nessun logo disponibile, mantieni l'icona di default
         }
     }
 

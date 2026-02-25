@@ -1002,6 +1002,13 @@ input {
     height: 24px;
 }
 
+.client-logo-header {
+    height: 32px;
+    max-width: 90px;
+    object-fit: contain;
+    margin-right: 8px;
+}
+
 .map-container {
     height: calc(100vh - 60px - 200px);
     position: relative;
