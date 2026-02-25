@@ -99,6 +99,68 @@ function initClientForm() {
             e.target.value = e.target.value.toUpperCase();
         });
     }
+
+    setupLogoField();
+}
+
+/**
+ * Configura i listener per il campo logo (file + URL)
+ */
+function setupLogoField() {
+    const fileInput = document.getElementById('clientLogoFile');
+    const urlInput = document.getElementById('clientLogoUrl');
+    const hiddenInput = document.getElementById('clientLogo');
+    const preview = document.getElementById('clientLogoPreview');
+
+    if (!fileInput) return;
+
+    // File selezionato → mostra anteprima, svuota URL
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            if (urlInput) urlInput.value = '';
+            hiddenInput.value = '';
+        }
+    });
+
+    // URL digitato → svuota file, aggiorna hidden
+    if (urlInput) {
+        urlInput.addEventListener('input', () => {
+            hiddenInput.value = urlInput.value;
+            if (urlInput.value) {
+                fileInput.value = '';
+                preview.src = urlInput.value;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    }
+}
+
+/**
+ * Carica il logo sul server, restituisce l'URL
+ */
+async function uploadLogoFile(file) {
+    const formData = new FormData();
+    formData.append('logo', file);
+
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE}/upload/logo`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+    });
+
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message || 'Errore upload logo');
+    return data.url;
 }
 
 /**
@@ -106,6 +168,18 @@ function initClientForm() {
  */
 async function handleClientSubmit(e) {
     e.preventDefault();
+
+    // Upload logo se è stato selezionato un file
+    const fileInput = document.getElementById('clientLogoFile');
+    if (fileInput && fileInput.files[0]) {
+        try {
+            const url = await uploadLogoFile(fileInput.files[0]);
+            document.getElementById('clientLogo').value = url;
+        } catch (err) {
+            alert('Errore upload logo: ' + err.message);
+            return;
+        }
+    }
 
     const formData = collectClientFormData();
 
@@ -219,6 +293,16 @@ function populateClientForm(client) {
     document.getElementById('defaultLang').value = client.default_lang || 'it';
     document.getElementById('isActive').checked = client.is_active;
 
+    // Mostra logo esistente
+    const urlInput = document.getElementById('clientLogoUrl');
+    const preview = document.getElementById('clientLogoPreview');
+    if (client.logo_url) {
+        if (urlInput) urlInput.value = client.logo_url;
+        if (preview) { preview.src = client.logo_url; preview.style.display = 'block'; }
+    }
+
+    setupLogoField();
+
     // Seleziona lingue disponibili
     const availableLangs = client.available_langs || ['it'];
     document.querySelectorAll('input[name="available_langs"]').forEach(cb => {
@@ -263,6 +347,18 @@ async function loadClientStats(slug) {
  */
 async function handleClientUpdate(e, clientSlug) {
     e.preventDefault();
+
+    // Upload logo se è stato selezionato un file
+    const fileInput = document.getElementById('clientLogoFile');
+    if (fileInput && fileInput.files[0]) {
+        try {
+            const url = await uploadLogoFile(fileInput.files[0]);
+            document.getElementById('clientLogo').value = url;
+        } catch (err) {
+            alert('Errore upload logo: ' + err.message);
+            return;
+        }
+    }
 
     const formData = collectClientFormData();
     delete formData.slug; // Non si può modificare lo slug

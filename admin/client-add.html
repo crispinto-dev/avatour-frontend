@@ -70,9 +70,17 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="clientLogo">URL Logo</label>
-                                <input type="url" id="clientLogo" name="logo_url"
-                                       placeholder="https://...">
+                                <label for="clientLogoFile">Logo</label>
+                                <input type="file" id="clientLogoFile" name="logo_file"
+                                       accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp">
+                                <img id="clientLogoPreview" src="" alt="Anteprima logo"
+                                     style="display:none; max-height:80px; max-width:200px; margin-top:8px; border-radius:4px;">
+                                <input type="hidden" id="clientLogo" name="logo_url">
+                                <small style="color:#6b7280; margin-top:4px; display:block;">
+                                    Oppure inserisci un URL diretto:
+                                    <input type="url" id="clientLogoUrl" placeholder="https://..."
+                                           style="margin-top:4px; width:100%; padding:4px 8px; border:1px solid #d1d5db; border-radius:4px;">
+                                </small>
                             </div>
                         </div>
                     </div>
