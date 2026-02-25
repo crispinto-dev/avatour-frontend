@@ -210,11 +210,71 @@ async function initPOIForm() {
     // Gestione lingue selezionate
     setupLanguageSelection();
 
+    // Gestione thumbnail
+    setupThumbnailField();
+
     // Handle form submit
     const form = document.getElementById('poiForm');
     if (form) {
         form.addEventListener('submit', handlePOISubmit);
     }
+}
+
+/**
+ * Configura i listener per il campo thumbnail (file + URL)
+ */
+function setupThumbnailField() {
+    const fileInput = document.getElementById('poiThumbnailFile');
+    const urlInput  = document.getElementById('poiThumbnailUrl');
+    const hidden    = document.getElementById('poiThumbnail');
+    const preview   = document.getElementById('poiThumbnailPreview');
+    if (!fileInput) return;
+
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => { preview.src = e.target.result; preview.style.display = 'block'; };
+            reader.readAsDataURL(file);
+            if (urlInput) urlInput.value = '';
+            hidden.value = '';
+        }
+    });
+
+    if (urlInput) {
+        urlInput.addEventListener('input', () => {
+            hidden.value = urlInput.value;
+            if (urlInput.value) {
+                fileInput.value = '';
+                preview.src = urlInput.value;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    }
+}
+
+/**
+ * Carica la thumbnail sul server se è stato selezionato un file
+ */
+async function uploadPOIThumbnailIfNeeded() {
+    const fileInput = document.getElementById('poiThumbnailFile');
+    const hidden    = document.getElementById('poiThumbnail');
+    if (!fileInput || !fileInput.files[0]) return;
+
+    const formData = new FormData();
+    formData.append('thumbnail', fileInput.files[0]);
+
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE}/upload/thumbnail`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message || 'Errore upload immagine');
+    hidden.value = data.url;
 }
 
 /**
@@ -425,6 +485,7 @@ function setupLanguageSelection() {
 async function handlePOISubmit(e) {
     e.preventDefault();
 
+    await uploadPOIThumbnailIfNeeded();
     const formData = collectPOIFormData();
 
     try {
@@ -482,6 +543,7 @@ function collectPOIFormData() {
         address: document.getElementById('poiAddress')?.value || '',
         lat: parseFloat(document.getElementById('lat').value),
         lng: parseFloat(document.getElementById('lng').value),
+        thumbnail: document.getElementById('poiThumbnail')?.value || null,
         languages,
         videos,
         translations
@@ -559,6 +621,17 @@ function populatePOIForm(poi) {
         document.getElementById('poiAddress').value = poi.address || '';
     }
 
+    // Thumbnail
+    const hidden   = document.getElementById('poiThumbnail');
+    const urlInput = document.getElementById('poiThumbnailUrl');
+    const preview  = document.getElementById('poiThumbnailPreview');
+    if (poi.thumbnail) {
+        if (hidden)   hidden.value = poi.thumbnail;
+        if (urlInput) urlInput.value = poi.thumbnail;
+        if (preview)  { preview.src = poi.thumbnail; preview.style.display = 'block'; }
+    }
+    setupThumbnailField();
+
     // Lingue
     poi.languages.forEach(lang => {
         const checkbox = document.querySelector(`input[name="languages"][value="${lang}"]`);
@@ -613,6 +686,7 @@ function populatePOIForm(poi) {
 async function handlePOIUpdate(e, poiCode) {
     e.preventDefault();
 
+    await uploadPOIThumbnailIfNeeded();
     const formData = collectPOIFormData();
     delete formData.poi_code; // Non si può modificare il codice
 
