@@ -114,8 +114,8 @@ class AvatourMap {
                     if (iconEl) iconEl.style.display = 'none';
                 }
             }
-            if (client && client.name) {
-                document.title = `${client.name} - AVATOUR`;
+            if (client && client.client_name) {
+                document.title = `${client.client_name} - AVATOUR`;
             }
         } catch (err) {
             // Nessun logo disponibile, mantieni l'icona di default
