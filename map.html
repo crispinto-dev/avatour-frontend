@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="map-page">
+<body class="map-page view-map">
     <!-- Header -->
     <header class="map-header">
         <div class="header-left">
@@ -76,6 +76,12 @@
         </div>
     </header>
 
+    <!-- View Tabs -->
+    <div class="view-tabs">
+        <button class="tab-btn active" id="tab-map">🗺 Mappa</button>
+        <button class="tab-btn" id="tab-list">📍 Punti di interesse</button>
+    </div>
+
     <!-- Map Container -->
     <div id="map" class="map-container"></div>
 
@@ -86,46 +92,6 @@
         </div>
         <div id="poi-list" class="poi-list">
             <!-- POI cards will be inserted here by JavaScript -->
-        </div>
-    </div>
-
-    <!-- POI Detail Modal -->
-    <div id="poi-modal" class="modal hidden">
-        <div class="modal-content modal-poi">
-            <button id="close-modal" class="close-btn">&times;</button>
-
-            <div class="poi-modal-header">
-                <img id="modal-thumbnail" src="" alt="" class="poi-thumbnail">
-                <div class="poi-info">
-                    <h2 id="modal-title"></h2>
-                    <p id="modal-description"></p>
-                </div>
-            </div>
-
-            <div class="poi-modal-body">
-                <div class="poi-detail-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                    </svg>
-                    <span id="modal-coordinates"></span>
-                </div>
-
-                <div class="poi-detail-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        <path d="M2 12h20"/>
-                    </svg>
-                    <span id="modal-languages">Italiano, English, Deutsch</span>
-                </div>
-            </div>
-
-            <div class="poi-modal-footer">
-                <button id="start-tour" class="btn-primary btn-large">
-                    <span>VEDI E ASCOLTA</span>
-                </button>
-            </div>
         </div>
     </div>
 

@@ -304,48 +304,32 @@ class AvatourMap {
 
         this.selectedPoi = poi;
 
-        // Update modal content
-        const thumbnailUrl = poi.thumbnail || 'assets/images/placeholder-poi.svg';
-        document.getElementById('modal-thumbnail').src = thumbnailUrl;
-        document.getElementById('modal-thumbnail').alt = poi.name;
-        document.getElementById('modal-thumbnail').onerror = function() {
-            this.src = 'assets/images/placeholder-poi.svg';
-        };
-        document.getElementById('modal-title').textContent = poi.name;
-        document.getElementById('modal-description').textContent = poi.description || '';
-        document.getElementById('modal-coordinates').textContent =
-            `${poi.lat.toFixed(4)}, ${poi.lng.toFixed(4)}`;
+        // Switch to map view if currently in list view
+        this.switchView('map');
 
-        // Update languages display
-        const languagesText = this.getLanguages(poi).map(l => {
-            const langNames = { it: 'Italiano', en: 'English', de: 'Deutsch' };
-            return langNames[l] || l.toUpperCase();
-        }).join(', ');
-        document.getElementById('modal-languages').textContent = languagesText;
-
-        // Show modal
-        document.getElementById('poi-modal').classList.remove('hidden');
-
-        // Highlight card
-        this.highlightPOICard(poiCode);
-
-        // Center map on POI
+        // Center map on POI and open popup
         const index = this.pois.findIndex(p => p.poi_code === poiCode);
         if (index !== -1 && this.markers[index]) {
-            this.map.setView([poi.lat, poi.lng], 15);
-            this.markers[index].openPopup();
+            this.map.setView([poi.lat, poi.lng], Math.max(this.map.getZoom(), 15));
+            setTimeout(() => {
+                this.markers[index].openPopup();
+                this.map.panBy([0, -80]);
+            }, 150);
         }
+
+        this.highlightPOICard(poiCode);
     }
 
-    closeModal() {
-        document.getElementById('poi-modal').classList.add('hidden');
-        this.selectedPoi = null;
-    }
+    switchView(view) {
+        const body = document.body;
+        body.classList.toggle('view-map', view === 'map');
+        body.classList.toggle('view-list', view === 'list');
 
-    startTour() {
-        if (this.selectedPoi) {
-            const slug = this.selectedPoi.url_slug || this.selectedPoi.poi_code;
-            window.location.href = `/poi/${slug}?lang=${this.currentLanguage}`;
+        document.getElementById('tab-map')?.classList.toggle('active', view === 'map');
+        document.getElementById('tab-list')?.classList.toggle('active', view === 'list');
+
+        if (view === 'map') {
+            setTimeout(() => this.map.invalidateSize(), 50);
         }
     }
 
@@ -414,6 +398,10 @@ class AvatourMap {
         if (startTourBtn) {
             startTourBtn.addEventListener('click', () => this.startTour());
         }
+
+        // Tab view toggle
+        document.getElementById('tab-map')?.addEventListener('click', () => this.switchView('map'));
+        document.getElementById('tab-list')?.addEventListener('click', () => this.switchView('list'));
 
         // Language selector
         const langToggle = document.getElementById('lang-toggle');

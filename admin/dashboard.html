@@ -77,6 +77,31 @@
                 </div>
             </div>
 
+            <!-- Logo upload (solo client_admin) -->
+            <div class="content-section" id="logoSection" style="display:none;">
+                <h2>🖼️ Logo Cliente</h2>
+                <p style="color:#6b7280; margin-bottom:16px;">Carica o aggiorna il logo del tuo cliente. Verrà mostrato nell'intestazione della mappa.</p>
+                <div style="display:flex; align-items:flex-start; gap:24px; flex-wrap:wrap;">
+                    <div>
+                        <img id="currentLogoPreview" src="" alt="Logo attuale"
+                             style="display:none; max-height:80px; max-width:200px; border-radius:8px; border:1px solid #e5e7eb; object-fit:contain; background:#f9fafb; padding:8px;">
+                        <p id="noLogoMsg" style="color:#9ca3af; font-size:0.875rem;">Nessun logo impostato</p>
+                    </div>
+                    <div style="flex:1; min-width:220px;">
+                        <div class="form-group">
+                            <label for="logoFileInput">Carica nuovo logo</label>
+                            <input type="file" id="logoFileInput" accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp">
+                        </div>
+                        <div class="form-group" style="margin-top:8px;">
+                            <label for="logoUrlInput">Oppure inserisci URL</label>
+                            <input type="url" id="logoUrlInput" placeholder="https://..." style="width:100%; padding:8px; border:1px solid #d1d5db; border-radius:6px;">
+                        </div>
+                        <button onclick="saveLogo()" class="btn-primary" style="margin-top:12px;">💾 Salva logo</button>
+                        <span id="logoSaveMsg" style="display:none; margin-left:12px; color:#16a34a; font-size:0.875rem;"></span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Recent POIs -->
             <div class="content-section">
                 <h2>POI Recenti</h2>
@@ -112,6 +137,80 @@
         checkAuth();
         document.getElementById('userDisplay').textContent = '👤 ' + getUsername();
         loadDashboardStats();
+
+        // Mostra sezione logo solo per client_admin
+        if (getUserRole() === 'client_admin') {
+            document.getElementById('logoSection').style.display = '';
+            loadCurrentLogo();
+        }
+
+        async function loadCurrentLogo() {
+            try {
+                const data = await fetchAuthAPI('/admin/my-client');
+                const logoUrl = data.logo_url;
+                if (logoUrl) {
+                    const img = document.getElementById('currentLogoPreview');
+                    img.src = logoUrl;
+                    img.style.display = '';
+                    document.getElementById('noLogoMsg').style.display = 'none';
+                    document.getElementById('logoUrlInput').value = logoUrl;
+                }
+            } catch (e) {
+                // ignora errori di caricamento logo
+            }
+        }
+
+        async function saveLogo() {
+            const fileInput = document.getElementById('logoFileInput');
+            const urlInput  = document.getElementById('logoUrlInput');
+            const saveMsg   = document.getElementById('logoSaveMsg');
+
+            saveMsg.style.display = 'none';
+
+            try {
+                let logoUrl = urlInput.value.trim();
+
+                // Se è stato selezionato un file, caricalo prima
+                if (fileInput.files[0]) {
+                    const formData = new FormData();
+                    formData.append('logo', fileInput.files[0]);
+                    const token = getAuthToken();
+                    const resp = await fetch(`${API_BASE}/upload/logo`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+                    const data = await resp.json();
+                    if (!data.success) throw new Error(data.message || 'Errore upload');
+                    logoUrl = data.url;
+                }
+
+                if (!logoUrl) {
+                    alert('Seleziona un file o inserisci un URL per il logo.');
+                    return;
+                }
+
+                await fetchAuthAPI('/admin/my-client/logo', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ logo_url: logoUrl })
+                });
+
+                // Aggiorna anteprima
+                const img = document.getElementById('currentLogoPreview');
+                img.src = logoUrl;
+                img.style.display = '';
+                document.getElementById('noLogoMsg').style.display = 'none';
+                urlInput.value = logoUrl;
+                fileInput.value = '';
+
+                saveMsg.textContent = '✓ Logo aggiornato!';
+                saveMsg.style.display = 'inline';
+                setTimeout(() => { saveMsg.style.display = 'none'; }, 3000);
+
+            } catch (e) {
+                alert('Errore: ' + e.message);
+            }
+        }
     </script>
 </body>
 </html>
