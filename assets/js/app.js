@@ -54,7 +54,7 @@ class AvatourApp {
 
         // Get POI from URL - supporta sia /poi/CODE che ?poi=CODE
         let poiCode = 'PAL-001';
-        const pathMatch = window.location.pathname.match(/\/poi\/([A-Z0-9]+-\d+)/i);
+        const pathMatch = window.location.pathname.match(/\/poi\/([A-Za-z0-9][A-Za-z0-9-]*)/);
         if (pathMatch) {
             poiCode = pathMatch[1].toUpperCase();
         } else {
@@ -68,22 +68,12 @@ class AvatourApp {
         // Load POI data from API
         await this.loadPOIData(poiCode);
 
-        // Check orientation
-        this.checkOrientation();
-        window.addEventListener('resize', () => this.checkOrientation());
-
-        // Initialize orientation listener for auto-fullscreen
-        this.initOrientationListener();
-
         // Show tutorial for first-time visitors
         if (this.firstVisit) {
             setTimeout(() => {
                 this.showTutorial();
             }, 3000);
         }
-
-        // Show rotation hint on mobile in portrait
-        this.showRotationHint();
     }
 
     hideSplash() {
@@ -96,9 +86,42 @@ class AvatourApp {
 
     showTutorial() {
         const tutorial = document.getElementById('tutorial-overlay');
-        if (tutorial) {
-            tutorial.classList.remove('hidden');
-        }
+        if (!tutorial) return;
+
+        const lang = navigator.language.slice(0, 2);
+        const texts = {
+            it: {
+                title: 'Benvenuto in AVATOUR!',
+                subtitle: 'Inquadra un QR code per iniziare il tour virtuale con il tuo avatar personale.',
+                tip1: 'Seleziona la tua lingua dal menu',
+                tip2: 'Esplora i POI nelle vicinanze dalla mappa',
+                btn: 'Ho capito, iniziamo!'
+            },
+            en: {
+                title: 'Welcome to AVATOUR!',
+                subtitle: 'Scan a QR code to start the virtual tour with your personal avatar.',
+                tip1: 'Select your language from the menu',
+                tip2: 'Explore nearby points of interest on the map',
+                btn: "Got it, let's go!"
+            },
+            de: {
+                title: 'Willkommen bei AVATOUR!',
+                subtitle: 'Scannen Sie einen QR-Code, um die virtuelle Tour zu starten.',
+                tip1: 'Wählen Sie Ihre Sprache aus dem Menü',
+                tip2: 'Erkunden Sie POIs in der Nähe auf der Karte',
+                btn: "Verstanden, los geht's!"
+            }
+        };
+        const t = texts[lang] || texts.it;
+
+        const el = (id) => document.getElementById(id);
+        if (el('tutorial-title'))    el('tutorial-title').textContent    = t.title;
+        if (el('tutorial-subtitle')) el('tutorial-subtitle').textContent = t.subtitle;
+        if (el('tutorial-tip1'))     el('tutorial-tip1').textContent     = t.tip1;
+        if (el('tutorial-tip2'))     el('tutorial-tip2').textContent     = t.tip2;
+        if (el('close-tutorial'))    el('close-tutorial').textContent    = t.btn;
+
+        tutorial.classList.remove('hidden');
     }
 
     closeTutorial() {
@@ -343,11 +366,14 @@ class AvatourApp {
     }
 
     updateLanguageUI() {
-        const flags = { it: '🇮🇹', en: '🇬🇧', de: '🇩🇪' };
         const codes = { it: 'IT', en: 'EN', de: 'DE' };
+        const code = codes[this.currentLanguage] || this.currentLanguage.toUpperCase();
 
-        this.elements.currentFlag.textContent = flags[this.currentLanguage];
-        this.elements.currentLang.textContent = codes[this.currentLanguage];
+        // Update badge class and text
+        const flagEl = this.elements.currentFlag;
+        flagEl.className = `lang-flag-badge ${this.currentLanguage}`;
+        flagEl.textContent = code;
+        this.elements.currentLang.textContent = code;
     }
 
     showLoading() {
@@ -408,10 +434,7 @@ class AvatourApp {
             closeShare: document.getElementById('close-share'),
 
             // Tutorial
-            closeTutorialBtn: document.getElementById('close-tutorial'),
-
-            // Orientation
-            orientationWarning: document.getElementById('orientation-warning')
+            closeTutorialBtn: document.getElementById('close-tutorial')
         };
     }
 
@@ -822,168 +845,6 @@ class AvatourApp {
         }
     }
 
-    checkOrientation() {
-        const isLandscape = window.innerWidth > window.innerHeight;
-        const isShort = window.innerHeight < 500;
-
-        if (isLandscape && isShort) {
-            this.elements.orientationWarning.classList.remove('hidden');
-        } else {
-            this.elements.orientationWarning.classList.add('hidden');
-        }
-    }
-
-    // ========================================
-    // Auto-Fullscreen on Orientation Change
-    // ========================================
-
-    /**
-     * Check if device is mobile
-     */
-    isMobileDevice() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-               (window.innerWidth <= 768 && 'ontouchstart' in window);
-    }
-
-    /**
-     * Initialize orientation change listener
-     */
-    initOrientationListener() {
-        if (!this.isMobileDevice()) return;
-
-        // Use matchMedia for better cross-browser support
-        const landscapeQuery = window.matchMedia("(orientation: landscape)");
-
-        // Handle orientation change
-        const handleChange = (e) => {
-            // Delay to allow orientation to stabilize
-            setTimeout(() => {
-                this.handleOrientationChange(e.matches);
-            }, 100);
-        };
-
-        // Modern browsers
-        if (landscapeQuery.addEventListener) {
-            landscapeQuery.addEventListener('change', handleChange);
-        } else if (landscapeQuery.addListener) {
-            // Safari < 14
-            landscapeQuery.addListener(handleChange);
-        }
-
-        // Also listen to orientationchange event for broader support
-        window.addEventListener('orientationchange', () => {
-            setTimeout(() => {
-                const isLandscape = window.innerWidth > window.innerHeight;
-                this.handleOrientationChange(isLandscape);
-            }, 100);
-        });
-    }
-
-    /**
-     * Handle orientation change - enter/exit fullscreen
-     */
-    handleOrientationChange(isLandscape) {
-        if (!this.isMobileDevice()) return;
-
-        const container = document.querySelector('.video-container');
-        if (!container) return;
-
-        if (isLandscape) {
-            // Enter fullscreen when rotating to landscape
-            this.enterFullscreen(container);
-            // Hide rotation hint
-            this.hideRotationHint();
-        } else {
-            // Exit fullscreen when rotating to portrait
-            this.exitFullscreenAuto();
-        }
-    }
-
-    /**
-     * Enter fullscreen (cross-browser)
-     */
-    async enterFullscreen(element) {
-        if (!element) return;
-
-        try {
-            if (element.requestFullscreen) {
-                await element.requestFullscreen();
-            } else if (element.webkitRequestFullscreen) {
-                // Safari
-                await element.webkitRequestFullscreen();
-            } else if (element.mozRequestFullScreen) {
-                // Firefox
-                await element.mozRequestFullScreen();
-            } else if (element.msRequestFullscreen) {
-                // IE/Edge
-                await element.msRequestFullscreen();
-            } else if (element.webkitEnterFullscreen) {
-                // iOS Safari video element
-                await element.webkitEnterFullscreen();
-            }
-        } catch (err) {
-            console.log('Fullscreen request failed:', err.message);
-        }
-    }
-
-    /**
-     * Exit fullscreen (cross-browser)
-     */
-    async exitFullscreenAuto() {
-        const fullscreenElement = document.fullscreenElement ||
-                                   document.webkitFullscreenElement ||
-                                   document.mozFullScreenElement ||
-                                   document.msFullscreenElement;
-
-        if (!fullscreenElement) return;
-
-        try {
-            if (document.exitFullscreen) {
-                await document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                // Safari
-                await document.webkitExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                // Firefox
-                await document.mozCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                // IE/Edge
-                await document.msExitFullscreen();
-            }
-        } catch (err) {
-            console.log('Exit fullscreen failed:', err.message);
-        }
-    }
-
-    /**
-     * Show rotation hint for mobile users
-     */
-    showRotationHint() {
-        if (!this.isMobileDevice()) return;
-
-        // Only show in portrait mode
-        const isPortrait = window.innerHeight > window.innerWidth;
-        if (!isPortrait) return;
-
-        const hint = document.getElementById('rotation-hint');
-        if (hint) {
-            hint.classList.remove('hidden');
-            // Auto-hide after 4 seconds
-            setTimeout(() => {
-                this.hideRotationHint();
-            }, 4000);
-        }
-    }
-
-    /**
-     * Hide rotation hint
-     */
-    hideRotationHint() {
-        const hint = document.getElementById('rotation-hint');
-        if (hint) {
-            hint.classList.add('hidden');
-        }
-    }
 }
 
 // Initialize app when DOM is ready

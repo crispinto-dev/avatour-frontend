@@ -27,6 +27,8 @@ class AvatourMap {
         this.selectedPoi = null;
         this.isPanelCollapsed = false;
         this.clientSlug = 'PAL';
+        this.userMarker = null;
+        this.userAccuracyCircle = null;
 
         // Centri mappa per i diversi client
         this.clientCenters = {
@@ -77,6 +79,9 @@ class AvatourMap {
 
         // Initialize map
         this.initMap();
+
+        // Request geolocation
+        this.locate();
 
         // Setup event listeners
         this.setupEventListeners();
@@ -177,32 +182,23 @@ class AvatourMap {
     }
 
     addMarkers() {
-        this.pois.forEach((poi, index) => {
-            // Create custom icon
+        this.pois.forEach((poi) => {
+            // Create custom icon (dot, no number)
             const icon = L.divIcon({
                 className: 'custom-marker',
                 html: `
                     <div style="
                         background: #1e40af;
-                        color: white;
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 50% 50% 50% 0;
-                        transform: rotate(-45deg);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
+                        width: 16px;
+                        height: 16px;
+                        border-radius: 50%;
                         border: 3px solid white;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                    ">
-                        <span style="transform: rotate(45deg); font-weight: bold; font-size: 14px;">
-                            ${index + 1}
-                        </span>
-                    </div>
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+                    "></div>
                 `,
-                iconSize: [36, 36],
-                iconAnchor: [18, 36],
-                popupAnchor: [0, -36]
+                iconSize: [16, 16],
+                iconAnchor: [8, 8],
+                popupAnchor: [0, -12]
             });
 
             // Create marker
@@ -211,6 +207,7 @@ class AvatourMap {
 
             // Add popup
             const thumbUrl = poi.thumbnail || 'assets/images/placeholder-poi.svg';
+            const poiUrl = poi.url_slug ? `/poi/${poi.url_slug}` : `/poi/${poi.poi_code}`;
             const popupContent = `
                 <div style="min-width: 200px;">
                     <img src="${thumbUrl}"
@@ -222,22 +219,22 @@ class AvatourMap {
                     <p style="margin: 0 0 12px 0; color: #64748b; font-size: 0.9rem; line-height: 1.4;">
                         ${poi.description || ''}
                     </p>
-                    <p style="margin: 0 0 12px 0; color: #666; font-size: 0.85rem;">
-                        🌍 ${this.getLanguages(poi).map(l => l.toUpperCase()).join(', ')}
-                    </p>
-                    <a href="/poi/${poi.poi_code}"
+                    <a href="${poiUrl}"
                        style="display: inline-block; width: 100%; text-align: center;
                               padding: 8px 16px; background: #f59e0b; color: white;
-                              text-decoration: none; border-radius: 6px; font-weight: 600;">
-                        ▶ Vedi e Ascolta Avatour
+                              text-decoration: none; border-radius: 6px; font-weight: 700;
+                              letter-spacing: 0.5px;">
+                        VEDI E ASCOLTA
                     </a>
                 </div>
             `;
 
-            marker.bindPopup(popupContent);
+            marker.bindPopup(popupContent, { maxWidth: 260 });
 
-            // Click event
+            // Click event: center map on POI and ensure popup is fully visible
             marker.on('click', () => {
+                this.map.setView([poi.lat, poi.lng], Math.max(this.map.getZoom(), 15));
+                setTimeout(() => { this.map.panBy([0, -80]); }, 150);
                 this.highlightPOICard(poi.poi_code);
             });
 
@@ -347,7 +344,8 @@ class AvatourMap {
 
     startTour() {
         if (this.selectedPoi) {
-            window.location.href = `/poi/${this.selectedPoi.poi_code}?lang=${this.currentLanguage}`;
+            const slug = this.selectedPoi.url_slug || this.selectedPoi.poi_code;
+            window.location.href = `/poi/${slug}?lang=${this.currentLanguage}`;
         }
     }
 
@@ -389,10 +387,10 @@ class AvatourMap {
             });
         }
 
-        // Toggle list button
-        const toggleBtn = document.getElementById('toggle-list');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => this.togglePOIList());
+        // Locate button
+        const locateBtn = document.getElementById('locate-btn');
+        if (locateBtn) {
+            locateBtn.addEventListener('click', () => this.locate());
         }
 
         // Modal close
@@ -486,16 +484,60 @@ class AvatourMap {
     }
 
     updateLanguageUI() {
-        const flags = { it: '🇮🇹', en: '🇬🇧', de: '🇩🇪' };
         const codes = { it: 'IT', en: 'EN', de: 'DE' };
+        const code = codes[this.currentLanguage] || this.currentLanguage.toUpperCase();
 
-        document.getElementById('current-flag').textContent = flags[this.currentLanguage];
-        document.getElementById('current-lang').textContent = codes[this.currentLanguage];
+        const flagEl = document.getElementById('current-flag');
+        if (flagEl) {
+            flagEl.className = `lang-flag-badge ${this.currentLanguage}`;
+            flagEl.textContent = code;
+        }
+        const langEl = document.getElementById('current-lang');
+        if (langEl) langEl.textContent = code;
 
-        // Update active state
         document.querySelectorAll('.lang-option').forEach(option => {
             option.classList.toggle('active', option.dataset.lang === this.currentLanguage);
         });
+    }
+
+    locate() {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+
+                if (this.userMarker) {
+                    this.map.removeLayer(this.userMarker);
+                }
+                if (this.userAccuracyCircle) {
+                    this.map.removeLayer(this.userAccuracyCircle);
+                }
+
+                this.userAccuracyCircle = L.circle([lat, lng], {
+                    radius: accuracy,
+                    color: '#1e40af',
+                    fillColor: '#1e40af',
+                    fillOpacity: 0.1,
+                    weight: 1
+                }).addTo(this.map);
+
+                this.userMarker = L.circleMarker([lat, lng], {
+                    radius: 8,
+                    fillColor: '#1e40af',
+                    color: 'white',
+                    weight: 2,
+                    fillOpacity: 1
+                }).bindPopup('📍 La tua posizione').addTo(this.map);
+
+                this.map.setView([lat, lng], 15);
+            },
+            (err) => {
+                console.log('Geolocation non disponibile:', err.message);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
     }
 }
 

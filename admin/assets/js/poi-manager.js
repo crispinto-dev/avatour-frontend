@@ -505,12 +505,30 @@ async function handlePOISubmit(e) {
 }
 
 /**
+ * Genera uno slug URL da un nome (es. "Chiesa di San Marco" → "chiesa-di-san-marco")
+ */
+function generatePOISlug(name) {
+    return name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+}
+
+/**
  * Raccoglie i dati dal form
  */
 function collectPOIFormData() {
     const clientSlug = document.getElementById('clientSlug').value;
     const poiNumber = document.getElementById('poiNumber').value;
     const poi_code = `${clientSlug}-${String(poiNumber).padStart(3, '0')}`;
+
+    const poiName = document.getElementById('poiName').value;
+    const slugInput = document.getElementById('poiUrlSlug');
+    const url_slug = (slugInput?.value?.trim()) || generatePOISlug(poiName) || null;
 
     const languages = Array.from(document.querySelectorAll('input[name="languages"]:checked'))
         .map(cb => cb.value);
@@ -538,12 +556,13 @@ function collectPOIFormData() {
     return {
         poi_code,
         client_slug: clientSlug,
-        name: document.getElementById('poiName').value,
+        name: poiName,
         description: document.getElementById('poiDescription')?.value || '',
         address: document.getElementById('poiAddress')?.value || '',
         lat: parseFloat(document.getElementById('lat').value),
         lng: parseFloat(document.getElementById('lng').value),
         thumbnail: document.getElementById('poiThumbnail')?.value || null,
+        url_slug,
         languages,
         videos,
         translations
@@ -630,6 +649,8 @@ function populatePOIForm(poi) {
         if (urlInput) urlInput.value = poi.thumbnail;
         if (preview)  { preview.src = poi.thumbnail; preview.style.display = 'block'; }
     }
+    const slugInput = document.getElementById('poiUrlSlug');
+    if (slugInput && poi.url_slug) slugInput.value = poi.url_slug;
     setupThumbnailField();
 
     // Lingue

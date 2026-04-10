@@ -9,7 +9,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -40,24 +40,35 @@
             </h1>
         </div>
 
-        <div class="header-right">
+        <div class="header-right" style="display:flex;align-items:center;gap:8px;">
+            <!-- Locate Button -->
+            <button id="locate-btn" class="locate-btn btn-icon" title="La mia posizione">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    <line x1="12" y1="2" x2="12" y2="6"/>
+                    <line x1="12" y1="18" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="6" y2="12"/>
+                    <line x1="18" y1="12" x2="22" y2="12"/>
+                </svg>
+            </button>
             <!-- Language Selector -->
             <div class="language-selector">
                 <button id="lang-toggle" class="lang-button">
-                    <span class="flag-icon" id="current-flag">🇮🇹</span>
+                    <span class="lang-flag-badge it" id="current-flag">IT</span>
                     <span class="lang-code" id="current-lang">IT</span>
                 </button>
                 <div id="lang-dropdown" class="lang-dropdown hidden">
                     <button class="lang-option" data-lang="it">
-                        <span class="flag-icon">🇮🇹</span>
+                        <span class="lang-flag-badge it">IT</span>
                         <span>Italiano</span>
                     </button>
                     <button class="lang-option" data-lang="en">
-                        <span class="flag-icon">🇬🇧</span>
+                        <span class="lang-flag-badge en">EN</span>
                         <span>English</span>
                     </button>
                     <button class="lang-option" data-lang="de">
-                        <span class="flag-icon">🇩🇪</span>
+                        <span class="lang-flag-badge de">DE</span>
                         <span>Deutsch</span>
                     </button>
                 </div>
@@ -72,14 +83,6 @@
     <div class="poi-list-panel">
         <div class="panel-header">
             <h2>Punti di interesse</h2>
-            <button id="toggle-list" class="toggle-btn">
-                <svg id="chevron-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 15l-6-6-6 6"/>
-                </svg>
-                <svg id="chevron-down" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 9l6 6 6-6"/>
-                </svg>
-            </button>
         </div>
         <div id="poi-list" class="poi-list">
             <!-- POI cards will be inserted here by JavaScript -->
@@ -120,10 +123,7 @@
 
             <div class="poi-modal-footer">
                 <button id="start-tour" class="btn-primary btn-large">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <span>Vedi e Ascolta Avatour</span>
+                    <span>VEDI E ASCOLTA</span>
                 </button>
             </div>
         </div>
