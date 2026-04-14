@@ -248,6 +248,10 @@ class AvatourApp {
             this.vimeoPlayer = null;
         }
 
+        // Reset icona audio a "non muto" ad ogni caricamento video
+        this.elements.volumeIcon?.classList.remove('hidden');
+        this.elements.muteIcon?.classList.add('hidden');
+
         // Crea iframe per Vimeo (senza controlli nativi)
         const iframe = document.createElement('iframe');
         iframe.id = 'vimeo-iframe';
@@ -283,6 +287,8 @@ class AvatourApp {
             this.hideLoading();
             // Show paused state initially
             this.elements.videoContainer.classList.add('video-paused');
+            // Imposta volume iniziale (fa scattare volumechange con valore > 0)
+            this.vimeoPlayer.setVolume(0.8);
         }).catch(err => {
             console.error('Vimeo player ready error:', err);
             this.hideLoading();
