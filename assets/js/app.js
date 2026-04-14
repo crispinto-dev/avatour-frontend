@@ -53,13 +53,19 @@ class AvatourApp {
         this.setupEventListeners();
 
         // Get POI from URL - supporta sia /poi/CODE che ?poi=CODE
-        let poiCode = 'PAL-001';
+        let poiCode = null;
         const pathMatch = window.location.pathname.match(/\/poi\/([A-Za-z0-9][A-Za-z0-9-]*)/);
         if (pathMatch) {
             poiCode = pathMatch[1].toUpperCase();
         } else {
             const urlParams = new URLSearchParams(window.location.search);
-            poiCode = urlParams.get('poi') || 'PAL-001';
+            poiCode = urlParams.get('poi') || null;
+        }
+
+        // Se non c'è un codice POI nell'URL mostra solo il tutorial
+        if (!poiCode) {
+            this.showTutorial();
+            return;
         }
 
         // Load all POIs for navigation
@@ -810,8 +816,6 @@ class AvatourApp {
     share(platform) {
         const url = window.location.href;
         const title = `AVATOUR - ${this.currentPoi ? this.currentPoi.name : 'Virtual Tour'}`;
-        const text = this.currentPoi ? this.currentPoi.description : 'Esplora il territorio con guide virtuali';
-
         switch (platform) {
             case 'facebook':
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
