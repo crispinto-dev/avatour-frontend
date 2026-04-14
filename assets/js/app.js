@@ -280,6 +280,7 @@ class AvatourApp {
         }
 
         // Reset icona audio a "non muto" ad ogni caricamento video
+        this._isMuted = false;
         this.elements.volumeIcon?.classList.remove('hidden');
         this.elements.muteIcon?.classList.add('hidden');
 
@@ -640,25 +641,21 @@ class AvatourApp {
     }
 
     toggleMute() {
-        if (this.vimeoPlayer) {
-            this.vimeoPlayer.getVolume().then(volume => {
-                if (volume > 0) {
-                    this._lastVolume = volume;
-                    this.vimeoPlayer.setVolume(0);
-                } else {
-                    this.vimeoPlayer.setVolume(this._lastVolume || 0.8);
-                }
-            });
-        } else {
-            this.elements.video.muted = !this.elements.video.muted;
+        this._isMuted = !this._isMuted;
 
-            if (this.elements.video.muted) {
-                this.elements.volumeIcon.classList.add('hidden');
-                this.elements.muteIcon.classList.remove('hidden');
+        // Aggiorna icona immediatamente (mobile non scatena volumechange)
+        this.elements.volumeIcon.classList.toggle('hidden', this._isMuted);
+        this.elements.muteIcon.classList.toggle('hidden', !this._isMuted);
+
+        if (this.vimeoPlayer) {
+            if (this._isMuted) {
+                this.vimeoPlayer.getVolume().then(v => { this._lastVolume = v || 0.8; });
+                this.vimeoPlayer.setVolume(0);
             } else {
-                this.elements.volumeIcon.classList.remove('hidden');
-                this.elements.muteIcon.classList.add('hidden');
+                this.vimeoPlayer.setVolume(this._lastVolume || 0.8);
             }
+        } else {
+            this.elements.video.muted = this._isMuted;
         }
     }
 
