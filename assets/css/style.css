@@ -277,6 +277,39 @@ input {
     line-height: 1.6;
 }
 
+.tutorial-lang-selector {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.tutorial-lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.tutorial-lang-btn .fi {
+    width: 22px !important;
+    height: 16px !important;
+}
+
+.tutorial-lang-btn.active {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+    background: #eff6ff;
+}
+
 .tutorial-tips {
     text-align: left;
     margin-bottom: var(--spacing-xl);

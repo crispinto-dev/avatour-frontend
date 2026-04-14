@@ -88,39 +88,56 @@ class AvatourApp {
         const tutorial = document.getElementById('tutorial-overlay');
         if (!tutorial) return;
 
-        const lang = navigator.language.slice(0, 2);
         const texts = {
             it: {
                 title: 'Benvenuto in AVATOUR!',
                 subtitle: 'Inquadra un QR code per iniziare il tour virtuale con il tuo avatar personale.',
-                tip1: 'Seleziona la tua lingua dal menu',
-                tip2: 'Esplora i POI nelle vicinanze dalla mappa',
+                tip1: 'Esplora i POI nelle vicinanze dalla mappa',
+                tip2: 'Scansiona il QR code per avviare il tour',
                 btn: 'Ho capito, iniziamo!'
             },
             en: {
                 title: 'Welcome to AVATOUR!',
                 subtitle: 'Scan a QR code to start the virtual tour with your personal avatar.',
-                tip1: 'Select your language from the menu',
-                tip2: 'Explore nearby points of interest on the map',
+                tip1: 'Explore nearby points of interest on the map',
+                tip2: 'Scan the QR code to start the tour',
                 btn: "Got it, let's go!"
             },
             de: {
                 title: 'Willkommen bei AVATOUR!',
                 subtitle: 'Scannen Sie einen QR-Code, um die virtuelle Tour zu starten.',
-                tip1: 'Wählen Sie Ihre Sprache aus dem Menü',
-                tip2: 'Erkunden Sie POIs in der Nähe auf der Karte',
+                tip1: 'Erkunden Sie POIs in der Nähe auf der Karte',
+                tip2: 'QR-Code scannen, um die Tour zu starten',
                 btn: "Verstanden, los geht's!"
             }
         };
-        const t = texts[lang] || texts.it;
 
-        const el = (id) => document.getElementById(id);
-        if (el('tutorial-title'))    el('tutorial-title').textContent    = t.title;
-        if (el('tutorial-subtitle')) el('tutorial-subtitle').textContent = t.subtitle;
-        if (el('tutorial-tip1'))     el('tutorial-tip1').textContent     = t.tip1;
-        if (el('tutorial-tip2'))     el('tutorial-tip2').textContent     = t.tip2;
-        if (el('close-tutorial'))    el('close-tutorial').textContent    = t.btn;
+        // Lingua iniziale: prima localStorage, poi browser, poi 'it'
+        const savedLang = localStorage.getItem('avatour_language');
+        const browserLang = navigator.language.slice(0, 2);
+        let activeLang = savedLang || (['it','en','de'].includes(browserLang) ? browserLang : 'it');
 
+        const applyLang = (lang) => {
+            activeLang = lang;
+            const t = texts[lang] || texts.it;
+            const el = (id) => document.getElementById(id);
+            if (el('tutorial-title'))    el('tutorial-title').textContent    = t.title;
+            if (el('tutorial-subtitle')) el('tutorial-subtitle').textContent = t.subtitle;
+            if (el('tutorial-tip1'))     el('tutorial-tip1').textContent     = t.tip1;
+            if (el('tutorial-tip2'))     el('tutorial-tip2').textContent     = t.tip2;
+            if (el('close-tutorial'))    el('close-tutorial').textContent    = t.btn;
+
+            document.querySelectorAll('.tutorial-lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+        };
+
+        // Aggiungi listener ai bottoni lingua
+        document.querySelectorAll('.tutorial-lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+        });
+
+        applyLang(activeLang);
         tutorial.classList.remove('hidden');
     }
 
@@ -129,6 +146,12 @@ class AvatourApp {
         if (tutorial) {
             tutorial.classList.add('hidden');
             localStorage.setItem('avatour_visited', 'true');
+
+            // Salva la lingua scelta nel tutorial
+            const activeBtn = document.querySelector('.tutorial-lang-btn.active');
+            if (activeBtn) {
+                localStorage.setItem('avatour_language', activeBtn.dataset.lang);
+            }
         }
     }
 
@@ -153,9 +176,11 @@ class AvatourApp {
             console.log('POI caricato:', poi);
             this.currentPoi = poi;
 
-            // Carica video nella lingua del browser
-            const userLang = navigator.language.slice(0, 2);
-            const initialLang = poi.languages.includes(userLang) ? userLang : poi.languages[0];
+            // Lingua: prima quella salvata, poi quella del browser, poi la prima disponibile
+            const savedLang = localStorage.getItem('avatour_language');
+            const browserLang = navigator.language.slice(0, 2);
+            const preferredLang = savedLang || browserLang;
+            const initialLang = poi.languages.includes(preferredLang) ? preferredLang : poi.languages[0];
             this.currentLanguage = initialLang;
 
             // Aggiorna UI con titolo e descrizione nella lingua corrente
