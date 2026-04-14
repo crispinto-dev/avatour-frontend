@@ -183,22 +183,17 @@ class AvatourMap {
 
     addMarkers() {
         this.pois.forEach((poi) => {
-            // Create custom icon (dot, no number)
+            // Create custom pin/teardrop icon
             const icon = L.divIcon({
                 className: 'custom-marker',
-                html: `
-                    <div style="
-                        background: #1e40af;
-                        width: 16px;
-                        height: 16px;
-                        border-radius: 50%;
-                        border: 3px solid white;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-                    "></div>
-                `,
-                iconSize: [16, 16],
-                iconAnchor: [8, 8],
-                popupAnchor: [0, -12]
+                html: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="30" viewBox="0 0 22 30">
+                    <path d="M11 0C4.9 0 0 4.9 0 11c0 7.7 11 19 11 19s11-11.3 11-19C22 4.9 17.1 0 11 0z"
+                          fill="#1e40af" stroke="white" stroke-width="1.5"/>
+                    <circle cx="11" cy="11" r="4" fill="white"/>
+                </svg>`,
+                iconSize: [22, 30],
+                iconAnchor: [11, 30],
+                popupAnchor: [0, -32]
             });
 
             // Create marker
@@ -253,7 +248,8 @@ class AvatourMap {
             return;
         }
 
-        this.pois.forEach(poi => {
+        const sorted = [...this.pois].sort((a, b) => a.name.localeCompare(b.name, 'it'));
+        sorted.forEach(poi => {
             const card = document.createElement('div');
             card.className = 'poi-card';
             card.dataset.poiId = poi.poi_code;

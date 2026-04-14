@@ -96,21 +96,21 @@ class AvatourApp {
 
         const texts = {
             it: {
-                title: 'Benvenuto in AVATOUR!',
+                title: 'Benvenuto in AVATOUR',
                 subtitle: 'Inquadra un QR code per iniziare il tour virtuale con il tuo avatar personale.',
                 tip1: 'Esplora i POI nelle vicinanze dalla mappa',
                 tip2: 'Scansiona il QR code per avviare il tour',
                 btn: 'Ho capito, iniziamo!'
             },
             en: {
-                title: 'Welcome to AVATOUR!',
+                title: 'Welcome to AVATOUR',
                 subtitle: 'Scan a QR code to start the virtual tour with your personal avatar.',
                 tip1: 'Explore nearby points of interest on the map',
                 tip2: 'Scan the QR code to start the tour',
                 btn: "Got it, let's go!"
             },
             de: {
-                title: 'Willkommen bei AVATOUR!',
+                title: 'Willkommen bei AVATOUR',
                 subtitle: 'Scannen Sie einen QR-Code, um die virtuelle Tour zu starten.',
                 tip1: 'Erkunden Sie POIs in der Nähe auf der Karte',
                 tip2: 'QR-Code scannen, um die Tour zu starten',
