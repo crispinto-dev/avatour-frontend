@@ -473,12 +473,13 @@ class AvatourMap {
 
     updateLanguageUI() {
         const codes = { it: 'IT', en: 'EN', de: 'DE' };
+        const flagCodes = { it: 'it', en: 'gb', de: 'de' };
         const code = codes[this.currentLanguage] || this.currentLanguage.toUpperCase();
+        const flagCode = flagCodes[this.currentLanguage] || this.currentLanguage;
 
         const flagEl = document.getElementById('current-flag');
         if (flagEl) {
-            flagEl.className = `lang-flag-badge ${this.currentLanguage}`;
-            flagEl.textContent = code;
+            flagEl.className = `fi fi-${flagCode}`;
         }
         const langEl = document.getElementById('current-lang');
         if (langEl) langEl.textContent = code;

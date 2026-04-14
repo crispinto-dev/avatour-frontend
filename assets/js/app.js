@@ -367,12 +367,12 @@ class AvatourApp {
 
     updateLanguageUI() {
         const codes = { it: 'IT', en: 'EN', de: 'DE' };
+        const flagCodes = { it: 'it', en: 'gb', de: 'de' };
         const code = codes[this.currentLanguage] || this.currentLanguage.toUpperCase();
+        const flagCode = flagCodes[this.currentLanguage] || this.currentLanguage;
 
-        // Update badge class and text
         const flagEl = this.elements.currentFlag;
-        flagEl.className = `lang-flag-badge ${this.currentLanguage}`;
-        flagEl.textContent = code;
+        flagEl.className = `fi fi-${flagCode}`;
         this.elements.currentLang.textContent = code;
     }
 

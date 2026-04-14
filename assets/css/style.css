@@ -427,36 +427,23 @@ input {
     display: none !important;
 }
 
-/* Language flag badges (cross-platform, no emoji) */
-.lang-flag-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 26px;
-    height: 20px;
-    padding: 0 4px;
+/* Language flag icons (flag-icons library) */
+.lang-flag-badge, span.fi {
+    width: 24px !important;
+    height: 18px !important;
     border-radius: 3px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    background: rgba(255,255,255,0.25);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.4);
-    text-transform: uppercase;
+    background-size: cover !important;
+    flex-shrink: 0;
 }
-.lang-flag-badge.it { background: #009246; border-color: #009246; }
-.lang-flag-badge.en { background: #012169; border-color: #012169; }
-.lang-flag-badge.de { background: #333; border-color: #FFCE00; }
 
 /* Locate button on map */
 .locate-btn {
-    background: white;
+    background: transparent;
     border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    color: #1e40af;
+    color: white;
     padding: 6px;
 }
-.locate-btn:hover { background: #f0f4ff; }
+.locate-btn:hover { background: rgba(255,255,255,0.2); }
 .locate-btn svg { width: 20px; height: 20px; }
 
 /* Language dropdown for side controls */
