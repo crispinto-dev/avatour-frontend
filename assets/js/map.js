@@ -80,8 +80,8 @@ class AvatourMap {
         // Initialize map
         this.initMap();
 
-        // Request geolocation
-        this.locate();
+        // Request geolocation (solo marker, non centra la mappa)
+        this.locate(false);
 
         // Setup event listeners
         this.setupEventListeners();
@@ -489,7 +489,7 @@ class AvatourMap {
         });
     }
 
-    locate() {
+    locate(centerOnUser = true) {
         if (!navigator.geolocation) return;
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -520,7 +520,9 @@ class AvatourMap {
                     fillOpacity: 1
                 }).bindPopup('📍 La tua posizione').addTo(this.map);
 
-                this.map.setView([lat, lng], 15);
+                if (centerOnUser) {
+                    this.map.setView([lat, lng], 15);
+                }
             },
             (err) => {
                 console.log('Geolocation non disponibile:', err.message);
