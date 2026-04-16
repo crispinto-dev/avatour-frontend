@@ -54,12 +54,23 @@ class AvatourApp {
 
         // Get POI from URL - supporta sia /poi/CODE che ?poi=CODE
         let poiCode = null;
-        const pathMatch = window.location.pathname.match(/\/poi\/([A-Za-z0-9][A-Za-z0-9-]*)/);
+        const pathname = window.location.pathname;
+        const pathMatch = pathname.match(/\/poi\/([A-Za-z0-9][A-Za-z0-9-]*)/);
         if (pathMatch) {
             poiCode = pathMatch[1].toUpperCase();
         } else {
             const urlParams = new URLSearchParams(window.location.search);
             poiCode = urlParams.get('poi') || null;
+        }
+
+        // Se il path non è riconosciuto (es. /graccio) redirect al sito principale
+        const knownPaths = ['/', '/index.html', '/map', '/map.html'];
+        const isKnownPath = knownPaths.some(p => pathname === p) ||
+            pathname.startsWith('/poi/') ||
+            pathname.startsWith('/admin');
+        if (!isKnownPath) {
+            window.location.href = 'https://www.avatour.it';
+            return;
         }
 
         // Se non c'è un codice POI nell'URL mostra solo il tutorial
@@ -201,8 +212,8 @@ class AvatourApp {
             this.hideLoading();
         } catch (error) {
             console.error('Errore caricamento POI:', error);
-            this.showError('Impossibile caricare il punto di interesse');
-            this.hideLoading();
+            // POI non trovato → redirect al sito principale
+            window.location.href = 'https://www.avatour.it';
         }
     }
 
