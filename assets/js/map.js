@@ -201,30 +201,7 @@ class AvatourMap {
                 .addTo(this.map);
 
             // Add popup
-            const thumbUrl = poi.thumbnail || 'assets/images/placeholder-poi.svg';
-            const poiUrl = poi.url_slug ? `/poi/${poi.url_slug}` : `/poi/${poi.poi_code}`;
-            const popupContent = `
-                <div style="min-width: 200px;">
-                    <img src="${thumbUrl}"
-                         onerror="this.src='assets/images/placeholder-poi.svg'"
-                         style="width:100%; height:120px; object-fit:cover; border-radius:6px; margin-bottom:8px; display:block;">
-                    <h3 style="margin: 0 0 8px 0; color: #1e40af; font-size: 1.1rem;">
-                        ${poi.name}
-                    </h3>
-                    <p style="margin: 0 0 12px 0; color: #64748b; font-size: 0.9rem; line-height: 1.4;">
-                        ${poi.description || ''}
-                    </p>
-                    <a href="${poiUrl}"
-                       style="display: inline-block; width: 100%; text-align: center;
-                              padding: 8px 16px; background: #f59e0b; color: white;
-                              text-decoration: none; border-radius: 6px; font-weight: 700;
-                              letter-spacing: 0.5px;">
-                        VEDI E ASCOLTA
-                    </a>
-                </div>
-            `;
-
-            marker.bindPopup(popupContent, { maxWidth: 260 });
+            marker.bindPopup(() => this.buildPopupContent(poi), { maxWidth: 260 });
 
             // Click event: center map on POI and ensure popup is fully visible
             marker.on('click', () => {
@@ -235,6 +212,29 @@ class AvatourMap {
 
             this.markers.push(marker);
         });
+    }
+
+    buildPopupContent(poi) {
+        const btnLabels = { it: 'VEDI E ASCOLTA', en: 'WATCH & LISTEN', de: 'SEHEN & HÖREN' };
+        const btnText = btnLabels[this.currentLanguage] || btnLabels.it;
+        const thumbUrl = poi.thumbnail || 'assets/images/placeholder-poi.svg';
+        const poiUrl = poi.url_slug ? `/poi/${poi.url_slug}` : `/poi/${poi.poi_code}`;
+        return `
+            <div style="min-width: 200px;">
+                <img src="${thumbUrl}"
+                     onerror="this.src='assets/images/placeholder-poi.svg'"
+                     style="width:100%; height:120px; object-fit:cover; border-radius:6px; margin-bottom:8px; display:block;">
+                <h3 style="margin: 0 0 8px 0; color: #1e40af; font-size: 1.1rem;">${poi.name}</h3>
+                <p style="margin: 0 0 12px 0; color: #64748b; font-size: 0.9rem; line-height: 1.4;">${poi.description || ''}</p>
+                <a href="${poiUrl}"
+                   style="display: inline-block; width: 100%; text-align: center;
+                          padding: 8px 16px; background: #f59e0b; color: white;
+                          text-decoration: none; border-radius: 6px; font-weight: 700;
+                          letter-spacing: 0.5px;">
+                    ${btnText}
+                </a>
+            </div>
+        `;
     }
 
     renderPOIList() {
@@ -445,6 +445,13 @@ class AvatourMap {
 
         // Close dropdown
         document.getElementById('lang-dropdown').classList.add('hidden');
+
+        // Aggiorna il popup aperto (se c'è) con il nuovo testo
+        this.markers.forEach((marker, i) => {
+            if (marker.isPopupOpen()) {
+                marker.setPopupContent(this.buildPopupContent(this.pois[i]));
+            }
+        });
 
         // Update URL
         const url = new URL(window.location);
