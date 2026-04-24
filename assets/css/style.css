@@ -1073,6 +1073,16 @@ input {
     position: relative;
     z-index: var(--z-sticky);
     box-shadow: 0 2px 8px var(--shadow);
+    overflow: visible;
+}
+
+/* Dropdown in map header: escape stacking context via fixed positioning */
+.map-header #lang-dropdown {
+    position: fixed !important;
+    top: 60px;
+    right: 8px;
+    left: auto !important;
+    z-index: 9999 !important;
 }
 
 .map-title {
