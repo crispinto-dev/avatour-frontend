@@ -657,14 +657,12 @@ input {
     position: absolute;
     top: calc(100% + var(--spacing-sm));
     right: 0;
-    background: rgba(0, 0, 0, 0.9);
+    background: #1e2d42;
     border-radius: var(--radius-md);
-    box-shadow: 0 4px 12px var(--shadow-heavy);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     min-width: 160px;
     overflow: hidden;
     z-index: var(--z-dropdown);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
 }
 
 .lang-option {
@@ -675,11 +673,12 @@ input {
     padding: var(--spacing-md);
     color: var(--text-light);
     text-align: left;
+    background: #1e2d42;
     transition: background var(--transition-fast);
 }
 
 .lang-option:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: #2a3d54;
 }
 
 .lang-option.active {
