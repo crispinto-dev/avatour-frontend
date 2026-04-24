@@ -214,18 +214,25 @@ class AvatourMap {
         });
     }
 
+    getTranslated(poi, field) {
+        const t = poi.translations?.[this.currentLanguage];
+        return (t && t[field]) || poi[field] || '';
+    }
+
     buildPopupContent(poi) {
         const btnLabels = { it: 'VEDI E ASCOLTA', en: 'WATCH & LISTEN', de: 'SEHEN & HÖREN' };
         const btnText = btnLabels[this.currentLanguage] || btnLabels.it;
         const thumbUrl = poi.thumbnail || 'assets/images/placeholder-poi.svg';
         const poiUrl = poi.url_slug ? `/poi/${poi.url_slug}` : `/poi/${poi.poi_code}`;
+        const name = this.getTranslated(poi, 'name');
+        const description = this.getTranslated(poi, 'description');
         return `
             <div style="min-width: 200px;">
                 <img src="${thumbUrl}"
                      onerror="this.src='assets/images/placeholder-poi.svg'"
-                     style="width:100%; height:120px; object-fit:cover; border-radius:6px; margin-bottom:8px; display:block;">
-                <h3 style="margin: 0 0 8px 0; color: #1e40af; font-size: 1.1rem;">${poi.name}</h3>
-                <p style="margin: 0 0 12px 0; color: #64748b; font-size: 0.9rem; line-height: 1.4;">${poi.description || ''}</p>
+                     style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:6px; margin-bottom:8px; display:block;">
+                <h3 style="margin: 0 0 8px 0; color: #1e40af; font-size: 1.1rem;">${name}</h3>
+                <p style="margin: 0 0 12px 0; color: #64748b; font-size: 0.9rem; line-height: 1.4;">${description}</p>
                 <a href="${poiUrl}"
                    style="display: inline-block; width: 100%; text-align: center;
                           padding: 8px 16px; background: #f59e0b; color: white;
@@ -265,8 +272,8 @@ class AvatourMap {
                     onerror="this.src='assets/images/placeholder-poi.svg'"
                 >
                 <div class="poi-card-content">
-                    <div class="poi-card-title">${poi.name}</div>
-                    <div class="poi-card-description">${poi.description || ''}</div>
+                    <div class="poi-card-title">${this.getTranslated(poi, 'name')}</div>
+                    <div class="poi-card-description">${this.getTranslated(poi, 'description')}</div>
                 </div>
             `;
 
@@ -452,6 +459,9 @@ class AvatourMap {
                 marker.setPopupContent(this.buildPopupContent(this.pois[i]));
             }
         });
+
+        // Ri-renderizza la lista POI con la nuova lingua
+        this.renderPOIList();
 
         // Update URL
         const url = new URL(window.location);
