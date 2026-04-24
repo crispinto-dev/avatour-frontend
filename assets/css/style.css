@@ -44,7 +44,7 @@
 
     /* Z-index */
     --z-base: 1;
-    --z-dropdown: 10;
+    --z-dropdown: 200;
     --z-sticky: 50;
     --z-modal: 100;
     --z-splash: 200;
