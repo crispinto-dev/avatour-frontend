@@ -53,18 +53,11 @@
                     <line x1="18" y1="12" x2="22" y2="12"/>
                 </svg>
             </button>
-            <!-- Language Selector: inline flags, no dropdown -->
-            <div class="lang-inline" id="lang-inline">
-                <button class="lang-flag-btn active" data-lang="it" title="Italiano">
-                    <span class="fi fi-it"></span>
-                </button>
-                <button class="lang-flag-btn" data-lang="en" title="English">
-                    <span class="fi fi-gb"></span>
-                </button>
-                <button class="lang-flag-btn" data-lang="de" title="Deutsch">
-                    <span class="fi fi-de"></span>
-                </button>
-            </div>
+            <!-- Language toggle button -->
+            <button id="lang-current" class="lang-current-btn" title="Cambia lingua">
+                <span class="fi fi-it" id="current-flag"></span>
+                <span class="lang-code" id="current-lang">IT</span>
+            </button>
         </div>
     </header>
 
@@ -91,6 +84,22 @@
     <div id="map-loading" class="map-loading">
         <div class="spinner"></div>
         <p>Caricamento mappa...</p>
+    </div>
+
+    <!-- Language Panel: direct body child, escapes all stacking contexts -->
+    <div id="lang-panel" class="lang-panel hidden">
+        <button class="lang-panel-btn active" data-lang="it">
+            <span class="fi fi-it"></span>
+            <span>Italiano</span>
+        </button>
+        <button class="lang-panel-btn" data-lang="en">
+            <span class="fi fi-gb"></span>
+            <span>English</span>
+        </button>
+        <button class="lang-panel-btn" data-lang="de">
+            <span class="fi fi-de"></span>
+            <span>Deutsch</span>
+        </button>
     </div>
 
     <!-- Leaflet JS -->

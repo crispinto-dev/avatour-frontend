@@ -1076,34 +1076,65 @@ input {
     overflow: visible;
 }
 
-/* Inline language flags for map header */
-.lang-inline {
+/* Language toggle button in header */
+.lang-current-btn {
     display: flex;
     align-items: center;
-    gap: 4px;
-}
-
-.lang-flag-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 6px;
+    padding: 6px 10px;
     background: rgba(255,255,255,0.15);
-    border: 2px solid transparent;
-    transition: background var(--transition-fast), border-color var(--transition-fast);
-    font-size: 1.3rem;
+    color: var(--text-light);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: 2px solid rgba(255,255,255,0.3);
     cursor: pointer;
+    transition: background var(--transition-fast);
 }
-
-.lang-flag-btn:hover {
-    background: rgba(255,255,255,0.3);
-}
-
-.lang-flag-btn.active {
-    border-color: var(--primary-orange);
+.lang-current-btn:hover {
     background: rgba(255,255,255,0.25);
+}
+.lang-current-btn .fi {
+    font-size: 1.2rem;
+}
+
+/* Language panel: fixed, direct body child */
+.lang-panel {
+    position: fixed;
+    background: #1e2d42;
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    min-width: 150px;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.lang-panel-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #fff;
+    background: #1e2d42;
+    text-align: left;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.lang-panel-btn:last-child {
+    border-bottom: none;
+}
+.lang-panel-btn:hover {
+    background: #2a3d54;
+}
+.lang-panel-btn.active {
+    background: var(--primary-orange);
+}
+.lang-panel-btn .fi {
+    font-size: 1.2rem;
+    flex-shrink: 0;
 }
 
 .map-title {

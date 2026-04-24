@@ -406,12 +406,36 @@ class AvatourMap {
         document.getElementById('tab-map')?.addEventListener('click', () => this.switchView('map'));
         document.getElementById('tab-list')?.addEventListener('click', () => this.switchView('list'));
 
-        // Inline language flag buttons
-        document.querySelectorAll('.lang-flag-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.changeLanguage(btn.dataset.lang);
+        // Language panel toggle
+        const langCurrentBtn = document.getElementById('lang-current');
+        const langPanel = document.getElementById('lang-panel');
+
+        if (langCurrentBtn && langPanel) {
+            langCurrentBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = langPanel.classList.contains('hidden');
+                if (isHidden) {
+                    const rect = langCurrentBtn.getBoundingClientRect();
+                    langPanel.style.top = (rect.bottom + 4) + 'px';
+                    langPanel.style.right = (window.innerWidth - rect.right) + 'px';
+                    langPanel.style.left = 'auto';
+                    langPanel.classList.remove('hidden');
+                } else {
+                    langPanel.classList.add('hidden');
+                }
             });
-        });
+
+            langPanel.querySelectorAll('.lang-panel-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    this.changeLanguage(btn.dataset.lang);
+                    langPanel.classList.add('hidden');
+                });
+            });
+
+            document.addEventListener('click', () => {
+                langPanel.classList.add('hidden');
+            });
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -459,8 +483,16 @@ class AvatourMap {
     }
 
     updateLanguageUI() {
-        // Update active state on inline flag buttons
-        document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+        // Update toggle button
+        const flagCodes = { it: 'it', en: 'gb', de: 'de' };
+        const codes = { it: 'IT', en: 'EN', de: 'DE' };
+        const flagEl = document.getElementById('current-flag');
+        if (flagEl) flagEl.className = `fi fi-${flagCodes[this.currentLanguage] || this.currentLanguage}`;
+        const langEl = document.getElementById('current-lang');
+        if (langEl) langEl.textContent = codes[this.currentLanguage] || this.currentLanguage.toUpperCase();
+
+        // Update active state in panel
+        document.querySelectorAll('.lang-panel-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === this.currentLanguage);
         });
     }
