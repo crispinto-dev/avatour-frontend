@@ -63,8 +63,8 @@
 
     <!-- View Tabs -->
     <div class="view-tabs">
-        <button class="tab-btn active" id="tab-map">🗺 Mappa</button>
-        <button class="tab-btn" id="tab-list">📍 Punti di interesse</button>
+        <button class="tab-btn active" id="tab-map">🗺 <span id="label-map">Mappa</span></button>
+        <button class="tab-btn" id="tab-list">📍 <span id="label-list">Punti di interesse</span></button>
     </div>
 
     <!-- Map Container -->
@@ -73,7 +73,7 @@
     <!-- POI List Panel -->
     <div class="poi-list-panel">
         <div class="panel-header">
-            <h2>Punti di interesse</h2>
+            <h2 id="label-panel-header">Punti di interesse</h2>
         </div>
         <div id="poi-list" class="poi-list">
             <!-- POI cards will be inserted here by JavaScript -->

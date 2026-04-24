@@ -495,6 +495,22 @@ class AvatourMap {
         document.querySelectorAll('.lang-panel-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === this.currentLanguage);
         });
+
+        // Translate UI labels
+        const uiLabels = {
+            it: { map: 'Mappa', list: 'Punti di interesse' },
+            en: { map: 'Map', list: 'Points of interest' },
+            de: { map: 'Karte', list: 'Sehenswürdigkeiten' },
+            fr: { map: 'Carte', list: 'Points d\'intérêt' },
+            es: { map: 'Mapa', list: 'Puntos de interés' }
+        };
+        const labels = uiLabels[this.currentLanguage] || uiLabels.it;
+        const labelMap = document.getElementById('label-map');
+        if (labelMap) labelMap.textContent = labels.map;
+        const labelList = document.getElementById('label-list');
+        if (labelList) labelList.textContent = labels.list;
+        const labelHeader = document.getElementById('label-panel-header');
+        if (labelHeader) labelHeader.textContent = labels.list;
     }
 
     locate(centerOnUser = true) {
