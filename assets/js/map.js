@@ -412,7 +412,16 @@ class AvatourMap {
 
         if (langToggle) {
             langToggle.addEventListener('click', () => {
+                const wasHidden = langDropdown.classList.contains('hidden');
                 langDropdown.classList.toggle('hidden');
+                if (wasHidden) {
+                    const rect = langToggle.getBoundingClientRect();
+                    langDropdown.style.position = 'fixed';
+                    langDropdown.style.top = (rect.bottom + 4) + 'px';
+                    langDropdown.style.right = (window.innerWidth - rect.right) + 'px';
+                    langDropdown.style.left = 'auto';
+                    langDropdown.style.zIndex = '9999';
+                }
             });
         }
 
