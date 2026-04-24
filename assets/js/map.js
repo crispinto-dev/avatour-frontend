@@ -406,30 +406,11 @@ class AvatourMap {
         document.getElementById('tab-map')?.addEventListener('click', () => this.switchView('map'));
         document.getElementById('tab-list')?.addEventListener('click', () => this.switchView('list'));
 
-        // Language selector
-        const langToggle = document.getElementById('lang-toggle');
-        const langDropdown = document.getElementById('lang-dropdown');
-
-        if (langToggle) {
-            langToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                langDropdown.classList.toggle('hidden');
+        // Inline language flag buttons
+        document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.changeLanguage(btn.dataset.lang);
             });
-        }
-
-        // Language options
-        document.querySelectorAll('.lang-option').forEach(option => {
-            option.addEventListener('click', (e) => {
-                const lang = e.currentTarget.dataset.lang;
-                this.changeLanguage(lang);
-            });
-        });
-
-        // Close dropdown on outside click
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.language-selector')) {
-                langDropdown.classList.add('hidden');
-            }
         });
 
         // Keyboard shortcuts
@@ -443,16 +424,8 @@ class AvatourMap {
     changeLanguage(lang) {
         this.currentLanguage = lang;
 
-        // Update flag and code
+        // Update UI
         this.updateLanguageUI();
-
-        // Update active state
-        document.querySelectorAll('.lang-option').forEach(option => {
-            option.classList.toggle('active', option.dataset.lang === lang);
-        });
-
-        // Close dropdown
-        document.getElementById('lang-dropdown').classList.add('hidden');
 
         // Aggiorna il popup aperto (se c'è) con il nuovo testo
         this.markers.forEach((marker, i) => {
@@ -486,20 +459,9 @@ class AvatourMap {
     }
 
     updateLanguageUI() {
-        const codes = { it: 'IT', en: 'EN', de: 'DE' };
-        const flagCodes = { it: 'it', en: 'gb', de: 'de' };
-        const code = codes[this.currentLanguage] || this.currentLanguage.toUpperCase();
-        const flagCode = flagCodes[this.currentLanguage] || this.currentLanguage;
-
-        const flagEl = document.getElementById('current-flag');
-        if (flagEl) {
-            flagEl.className = `fi fi-${flagCode}`;
-        }
-        const langEl = document.getElementById('current-lang');
-        if (langEl) langEl.textContent = code;
-
-        document.querySelectorAll('.lang-option').forEach(option => {
-            option.classList.toggle('active', option.dataset.lang === this.currentLanguage);
+        // Update active state on inline flag buttons
+        document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === this.currentLanguage);
         });
     }
 

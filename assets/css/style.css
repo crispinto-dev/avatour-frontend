@@ -1076,13 +1076,34 @@ input {
     overflow: visible;
 }
 
-/* Dropdown in map header: escape stacking context via fixed positioning */
-.map-header #lang-dropdown {
-    position: fixed !important;
-    top: 60px;
-    right: 8px;
-    left: auto !important;
-    z-index: 9999 !important;
+/* Inline language flags for map header */
+.lang-inline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lang-flag-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid transparent;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.lang-flag-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.lang-flag-btn.active {
+    border-color: var(--primary-orange);
+    background: rgba(255,255,255,0.25);
 }
 
 .map-title {

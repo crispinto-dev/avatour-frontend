@@ -53,26 +53,17 @@
                     <line x1="18" y1="12" x2="22" y2="12"/>
                 </svg>
             </button>
-            <!-- Language Selector -->
-            <div class="language-selector">
-                <button id="lang-toggle" class="lang-button">
-                    <span class="fi fi-it" id="current-flag"></span>
-                    <span class="lang-code" id="current-lang">IT</span>
+            <!-- Language Selector: inline flags, no dropdown -->
+            <div class="lang-inline" id="lang-inline">
+                <button class="lang-flag-btn active" data-lang="it" title="Italiano">
+                    <span class="fi fi-it"></span>
                 </button>
-                <div id="lang-dropdown" class="lang-dropdown hidden">
-                    <button class="lang-option" data-lang="it">
-                        <span class="fi fi-it"></span>
-                        <span>Italiano</span>
-                    </button>
-                    <button class="lang-option" data-lang="en">
-                        <span class="fi fi-gb"></span>
-                        <span>English</span>
-                    </button>
-                    <button class="lang-option" data-lang="de">
-                        <span class="fi fi-de"></span>
-                        <span>Deutsch</span>
-                    </button>
-                </div>
+                <button class="lang-flag-btn" data-lang="en" title="English">
+                    <span class="fi fi-gb"></span>
+                </button>
+                <button class="lang-flag-btn" data-lang="de" title="Deutsch">
+                    <span class="fi fi-de"></span>
+                </button>
             </div>
         </div>
     </header>
