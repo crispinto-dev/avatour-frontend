@@ -206,7 +206,7 @@ class AvatourMap {
             // Click event: center map on POI and ensure popup is fully visible
             marker.on('click', () => {
                 this.map.setView([poi.lat, poi.lng], Math.max(this.map.getZoom(), 15));
-                setTimeout(() => { this.map.panBy([0, -360]); }, 150);
+                setTimeout(() => { this.map.panBy([0, -Math.round(this.map.getSize().y * 0.38)]); }, 150);
                 this.highlightPOICard(poi.poi_code);
             });
 
@@ -316,7 +316,7 @@ class AvatourMap {
             this.map.setView([poi.lat, poi.lng], Math.max(this.map.getZoom(), 15));
             setTimeout(() => {
                 this.markers[index].openPopup();
-                this.map.panBy([0, -360]);
+                this.map.panBy([0, -Math.round(this.map.getSize().y * 0.38)]);
             }, 150);
         }
 
